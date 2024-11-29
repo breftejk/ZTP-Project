@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Auth0.OidcClient;
+using MAUI.Services;
 
 namespace MAUI;
 
@@ -28,8 +29,19 @@ public static class MauiProgram
             ClientId = "m0QBuy42uHdqw002iYdXAAjwfySRSj1N",
             RedirectUri = "ztp.project.app://callback/",
             PostLogoutRedirectUri = "ztp.project.app://callback/",
-            Scope = "openid profile email"
+            Scope = "openid profile email offline_access"
         }));
+        
+        builder.Services.AddSingleton<TokenManager>();
+        builder.Services.AddSingleton(sp =>
+        {
+            var tokenManager = sp.GetRequiredService<TokenManager>();
+            var handler = new AuthHttpClientHandler(tokenManager);
+            return new HttpClient(handler)
+            {
+                BaseAddress = new Uri(DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:5009" : "http://localhost:5009")
+            };
+        });
 
         return builder.Build();
     }

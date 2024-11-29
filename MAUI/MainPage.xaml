@@ -38,6 +38,13 @@
                     x:Name="UsernameLbl" />
 
                 <Button
+                    Clicked="OnMakeRequestClicked"
+                    HorizontalOptions="Center"
+                    SemanticProperties.Hint="Click to make a request"
+                    Text="Make Request"
+                    x:Name="MakeRequestBtn" />
+
+                <Button
                     Clicked="OnLogoutClicked"
                     HorizontalOptions="Center"
                     SemanticProperties.Hint="Click to log out"
