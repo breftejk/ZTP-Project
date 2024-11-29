@@ -1,23 +1,41 @@
-﻿namespace MAUI;
+﻿using Auth0.OidcClient; 
+
+namespace MAUI;
 
 public partial class MainPage : ContentPage
 {
-    int count = 0;
+    private readonly Auth0Client auth0Client;
 
-    public MainPage()
+    public MainPage(Auth0Client client)
     {
         InitializeComponent();
+        auth0Client = client;
     }
-
-    private void OnCounterClicked(object sender, EventArgs e)
+    
+    private async void OnLoginClicked(object sender, EventArgs e)
     {
-        count++;
+        var loginResult = await auth0Client.LoginAsync();
 
-        if (count == 1)
-            CounterBtn.Text = $"Clicked {count} time";
+        if (!loginResult.IsError)
+        {
+            UsernameLbl.Text = loginResult.User.Identity.Name;
+            UserPictureImg.Source = loginResult.User
+                .Claims.FirstOrDefault(c => c.Type == "picture")?.Value;
+            
+            LoginView.IsVisible = false;
+            HomeView.IsVisible = true;
+        }
         else
-            CounterBtn.Text = $"Clicked {count} times";
+        {
+            await DisplayAlert("Error", loginResult.ErrorDescription, "OK");
+        }
+    }
+    
+    private async void OnLogoutClicked(object sender, EventArgs e)
+    {
+        var logoutResult = await auth0Client.LogoutAsync();
 
-        SemanticScreenReader.Announce(CounterBtn.Text);
+        HomeView.IsVisible = false;
+        LoginView.IsVisible = true;
     }
 }
