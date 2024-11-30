@@ -29,7 +29,7 @@ public static class MauiProgram
             ClientId = "m0QBuy42uHdqw002iYdXAAjwfySRSj1N",
             RedirectUri = "ztp.project.app://callback/",
             PostLogoutRedirectUri = "ztp.project.app://callback/",
-            Scope = "openid profile email offline_access"
+            Scope = "openid profile email offline_access",
         }));
         
         builder.Services.AddSingleton<TokenManager>();

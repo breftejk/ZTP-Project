@@ -24,6 +24,8 @@ public partial class MainPage : ContentPage
 
         if (!loginResult.IsError)
         {
+            AccessTokenEditor.Text = loginResult.AccessToken;
+            
             await SecureStorage.SetAsync("access_token", loginResult.AccessToken);
             await SecureStorage.SetAsync("refresh_token", loginResult.RefreshToken);
             
@@ -62,7 +64,20 @@ public partial class MainPage : ContentPage
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Error", _httpClient.BaseAddress.ToString(), ex.Message, "OK");
+            await DisplayAlert("Error", _httpClient.DefaultRequestHeaders.ToString(), ex.Message, "OK");
+        }
+    }
+    
+    private void OnCopyAccessTokenClicked(object sender, EventArgs e)
+    {
+        if (!string.IsNullOrEmpty(AccessTokenEditor.Text))
+        {
+            Clipboard.Default.SetTextAsync(AccessTokenEditor.Text); // Kopiowanie tokenu do schowka
+            DisplayAlert("Copied", "Access token copied to clipboard.", "OK");
+        }
+        else
+        {
+            DisplayAlert("Error", "Access token is empty.", "OK");
         }
     }
 }

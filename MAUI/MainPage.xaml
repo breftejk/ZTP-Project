@@ -50,6 +50,26 @@
                     SemanticProperties.Hint="Click to log out"
                     Text="Log Out"
                     x:Name="LogoutBtn" />
+
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    HorizontalOptions="Center"
+                    Text="Access Token:" />
+
+                <Editor
+                    BackgroundColor="LightGray"
+                    HeightRequest="100"
+                    IsReadOnly="True"
+                    Margin="10"
+                    TextColor="Black"
+                    VerticalOptions="CenterAndExpand"
+                    x:Name="AccessTokenEditor" />
+
+                <Button
+                    Clicked="OnCopyAccessTokenClicked"
+                    HorizontalOptions="Center"
+                    Text="Copy Access Token" />
             </StackLayout>
         </VerticalStackLayout>
     </ScrollView>

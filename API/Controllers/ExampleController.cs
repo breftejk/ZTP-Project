@@ -1,10 +1,11 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using API.Filters;
 
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/example")]
 public class ExampleController : ControllerBase
 {
     [HttpGet("public")]
@@ -14,13 +15,16 @@ public class ExampleController : ControllerBase
     }
 
     [HttpGet("secured")]
-    [AuthorizationFilter(
-        audience: "your-api-identifier",
-        issuer: "https://ztp-project.eu.auth0.com/",
-        secret: "your-auth0-secret-key")]
+    [AuthorizationFilter()]
     public IActionResult GetSecuredData()
     {
-        var userId = User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
-        return Ok($"This is secured data for user {userId}.");
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+
+        return Ok(new
+        {
+            Id = userId,
+            Email = userEmail
+        });
     }
 }
