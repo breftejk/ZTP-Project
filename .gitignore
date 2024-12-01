@@ -149,3 +149,4 @@ $RECYCLE.BIN/
 # DB files
 *.db*
 ./API/Migrations/*
+!./API/Migrations/.gitkeep
