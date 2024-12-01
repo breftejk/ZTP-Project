@@ -1,3 +1,4 @@
+using API.Models;
 using Microsoft.AspNetCore.Mvc;
 using API.Services;
 using API.Services.DataExport;
@@ -20,8 +21,15 @@ public class ExportController : ControllerBase
     {
         try
         {
-            // Pobierz dane za pomocą WordFacade
-            var data = _wordFacade.GetAllWords(language);
+            List<WordPair> data = new List<WordPair>();
+            if(language == "all")
+            {
+                data = _wordFacade.GetAllWords(null);
+            }
+            else
+            {
+                data = _wordFacade.GetAllWords(language);
+            }
 
             if (data.Count == 0)
             {

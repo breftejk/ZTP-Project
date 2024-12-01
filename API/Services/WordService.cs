@@ -21,10 +21,10 @@ public class WordService : IWordService
     }
 
     /// <inheritdoc />
-    public List<WordPair> GetAllWordPairs(string language)
+    public List<WordPair> GetAllWordPairs(string? language)
     {
         return _dbContext.WordPairs
-            .Where(pair => pair.Language.ToLower() == language.ToLower())
+            .Where(pair => string.IsNullOrEmpty(language) || pair.Language.ToLower() == language.ToLower())
             .ToList();
     }
 

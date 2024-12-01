@@ -17,7 +17,7 @@ public static class DatabaseSeeder
     public static void SeedDatabase(AppDbContext context)
     {
         // List of supported languages with corresponding JSON files
-        string[] languages = { "german", "french", "spanish", "italian" };
+        string[] languages = { "de", "fr", "es", "it" };
 
         foreach (var language in languages)
         {

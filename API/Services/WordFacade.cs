@@ -19,19 +19,31 @@ public class WordFacade
     }
 
     /// <summary>
-    /// Retrieves all word pairs for a specified language.
+    /// Retrieves all word pairs for a specified language, or all word pairs if no language is specified.
     /// </summary>
-    /// <param name="language">The language for which to retrieve word pairs.</param>
-    /// <returns>A list of <see cref="WordPair"/> objects.</returns>
-    /// <exception cref="NotSupportedException">Thrown if the language is not supported.</exception>
-    public List<WordPair> GetAllWords(string language)
+    /// <param name="language">
+    /// The language for which to retrieve word pairs. 
+    /// If <c>null</c>, all word pairs from all languages will be returned.
+    /// </param>
+    /// <returns>
+    /// A list of <see cref="WordPair"/> objects. 
+    /// Returns all word pairs if <paramref name="language"/> is <c>null</c>.
+    /// </returns>
+    /// <exception cref="NotSupportedException">Thrown if the specified language is not supported.</exception>
+    public List<WordPair> GetAllWords(string? language)
     {
-        if (!_factory.IsLanguageSupported(language))
+        var service = _factory.GetService();
+        
+        if (language is null)
+        {
+            return service.GetAllWordPairs(null);
+        }
+        
+        if (language is not null && !_factory.IsLanguageSupported(language))
         {
             throw new NotSupportedException($"Language '{language}' is not supported.");
         }
 
-        var service = _factory.GetService();
         return service.GetAllWordPairs(language);
     }
 

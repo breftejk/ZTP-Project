@@ -8,11 +8,17 @@ namespace API.Services;
 public interface IWordService
 {
     /// <summary>
-    /// Retrieves all word pairs for a specific language.
+    /// Retrieves all word pairs for a specific language, or all word pairs if no language is specified.
     /// </summary>
-    /// <param name="language">The language to filter the word pairs.</param>
-    /// <returns>A list of all word pairs in the specified language.</returns>
-    List<WordPair> GetAllWordPairs(string language);
+    /// <param name="language">
+    /// The language to filter the word pairs. 
+    /// If <c>null</c>, all word pairs from all languages will be returned.
+    /// </param>
+    /// <returns>
+    /// A list of all word pairs in the specified language, 
+    /// or all word pairs if <paramref name="language"/> is <c>null</c>.
+    /// </returns>
+    List<WordPair> GetAllWordPairs(string? language);
 
     /// <summary>
     /// Retrieves translations for a specific word in a specific language.
