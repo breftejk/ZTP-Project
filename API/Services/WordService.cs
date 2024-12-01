@@ -21,35 +21,40 @@ public class WordService : IWordService
     }
 
     /// <inheritdoc />
-    public List<WordPair> GetAllWordPairs(string? language)
+    public List<WordPair> GetAllWordPairs(string? languageCode)
     {
         return _dbContext.WordPairs
-            .Where(pair => string.IsNullOrEmpty(language) || pair.Language.ToLower() == language.ToLower())
+            .Where(wp => string.IsNullOrEmpty(languageCode) || wp.LanguageCode.ToLower() == languageCode.ToLower())
             .ToList();
     }
 
     /// <inheritdoc />
-    public List<string> GetTranslations(string word, string language)
+    public List<string> GetTranslations(string word, string languageCode)
     {
         return _dbContext.WordPairs
-            .Where(pair => pair.Word.ToLower() == word.ToLower() &&
-                           pair.Language.ToLower() == language.ToLower())
-            .Select(pair => pair.Translation)
+            .Where(wp => wp.Word.ToLower() == word.ToLower() &&
+                         wp.LanguageCode.ToLower() == languageCode.ToLower())
+            .Select(wp => wp.Translation)
             .ToList();
     }
 
     /// <inheritdoc />
-    public void AddWordPair(string word, string translation, string language)
+    public void AddWordPair(string word, string translation, string languageCode)
     {
-        var wordPair = new WordPair(word, translation, language.ToLower());
+        var wordPair = new WordPair
+        {
+            Word = word,
+            Translation = translation,
+            LanguageCode = languageCode.ToLower()
+        };
+
         _dbContext.WordPairs.Add(wordPair);
         _dbContext.SaveChanges();
     }
 
     /// <inheritdoc />
-    public bool IsLanguageSupported(string language)
+    public bool IsLanguageSupported(string languageCode)
     {
-        return _dbContext.WordPairs
-            .Any(pair => pair.Language.ToLower() == language.ToLower());
+        return _dbContext.Languages.Any(l => l.Code.ToLower() == languageCode.ToLower());
     }
 }

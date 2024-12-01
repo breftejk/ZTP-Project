@@ -16,12 +16,26 @@ public static class DatabaseSeeder
     /// <param name="context">The database context to use for seeding.</param>
     public static void SeedDatabase(AppDbContext context)
     {
-        // List of supported languages with corresponding JSON files
-        string[] languages = { "de", "fr", "es", "it" };
-
-        foreach (var language in languages)
+        // List of supported languages with their names and codes
+        var languages = new List<(string Code, string Name)>
         {
-            var filePath = Path.Combine("Data", $"{language}.json");
+            ("de", "German"),
+            ("fr", "French"),
+            ("es", "Spanish"),
+            ("it", "Italian")
+        };
+
+        foreach (var (code, name) in languages)
+        {
+            // Ensure the language exists in the database
+            var language = context.Languages.FirstOrDefault(l => l.Code == code);
+            if (language == null)
+            {
+                language = new Language { Code = code, Name = name };
+                context.Languages.Add(language);
+            }
+
+            var filePath = Path.Combine("Data", $"{code}.json");
 
             // Check if the JSON file exists
             if (!File.Exists(filePath))
@@ -48,10 +62,18 @@ public static class DatabaseSeeder
                 var word = pair[0];
                 var translation = pair[1];
 
-                // Add the word pair to the database if it doesn't already exist
-                if (!context.WordPairs.Any(w => w.Word == word && w.Translation == translation && w.Language == language))
+                // Check if the word pair already exists
+                if (!context.WordPairs
+                    .Any(w => w.Word == word && 
+                              w.Translation == translation && 
+                              w.LanguageCode == code))
                 {
-                    context.WordPairs.Add(new WordPair(word, translation, language));
+                    context.WordPairs.Add(new WordPair
+                    {
+                        Word = word,
+                        Translation = translation,
+                        LanguageCode = code // Use LanguageCode instead of Language object
+                    });
                 }
             }
         }

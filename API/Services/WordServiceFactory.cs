@@ -20,14 +20,14 @@ public class WordServiceFactory
     }
 
     /// <summary>
-    /// Checks if a specific language is supported by verifying if there are any word pairs in the database.
+    /// Checks if a specific language code is supported by verifying if there are any word pairs in the database.
     /// </summary>
-    /// <param name="language">The language to check for support.</param>
-    /// <returns>True if the language is supported, otherwise false.</returns>
-    public bool IsLanguageSupported(string language)
+    /// <param name="languageCode">The language code to check for support.</param>
+    /// <returns>True if the language code is supported, otherwise false.</returns>
+    public bool IsLanguageSupported(string languageCode)
     {
         var service = GetService();
-        return service.IsLanguageSupported(language);
+        return service.IsLanguageSupported(languageCode);
     }
 
     /// <summary>

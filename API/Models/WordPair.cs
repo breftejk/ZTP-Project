@@ -8,17 +8,9 @@ public class WordPair
     public int Id { get; set; }
     public string Word { get; set; }
     public string Translation { get; set; }
-    public string Language { get; set; }
 
-    public WordPair(string word, string translation, string language)
-    {
-        Word = word;
-        Translation = translation;
-        Language = language;
-    }
-    
-    // Parameterless constructor (required for serialization)
-    public WordPair()
-    {
-    }
+    /// <summary>
+    /// Gets or sets the code of the associated language.
+    /// </summary>
+    public string LanguageCode { get; set; }
 }

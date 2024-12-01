@@ -14,12 +14,12 @@ public class CsvExportStrategy : IDataExportStrategy
         var builder = new StringBuilder();
 
         // Add header row
-        builder.AppendLine("Word,Translation,Language");
+        builder.AppendLine("Id,LanguageCode,Word,Translation");
 
         // Add data rows
         foreach (var pair in data)
         {
-            builder.AppendLine($"{pair.Word},{pair.Translation},{pair.Language}");
+            builder.AppendLine($"{pair.Id},{pair.LanguageCode},{pair.Word},{pair.Translation}");
         }
 
         return builder.ToString();

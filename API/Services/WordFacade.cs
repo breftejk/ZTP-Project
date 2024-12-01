@@ -19,50 +19,50 @@ public class WordFacade
     }
 
     /// <summary>
-    /// Retrieves all word pairs for a specified language, or all word pairs if no language is specified.
+    /// Retrieves all word pairs for a specified language code, or all word pairs if no language code is specified.
     /// </summary>
-    /// <param name="language">
-    /// The language for which to retrieve word pairs. 
+    /// <param name="languageCode">
+    /// The language code for which to retrieve word pairs. 
     /// If <c>null</c>, all word pairs from all languages will be returned.
     /// </param>
     /// <returns>
     /// A list of <see cref="WordPair"/> objects. 
-    /// Returns all word pairs if <paramref name="language"/> is <c>null</c>.
+    /// Returns all word pairs if <paramref name="languageCode"/> is <c>null</c>.
     /// </returns>
-    /// <exception cref="NotSupportedException">Thrown if the specified language is not supported.</exception>
-    public List<WordPair> GetAllWords(string? language)
+    /// <exception cref="NotSupportedException">Thrown if the specified language code is not supported.</exception>
+    public List<WordPair> GetAllWords(string? languageCode)
     {
         var service = _factory.GetService();
-        
-        if (language is null)
+
+        if (languageCode is null)
         {
             return service.GetAllWordPairs(null);
         }
-        
-        if (language is not null && !_factory.IsLanguageSupported(language))
+
+        if (languageCode is not null && !_factory.IsLanguageSupported(languageCode))
         {
-            throw new NotSupportedException($"Language '{language}' is not supported.");
+            throw new NotSupportedException($"Language code '{languageCode}' is not supported.");
         }
 
-        return service.GetAllWordPairs(language);
+        return service.GetAllWordPairs(languageCode);
     }
 
     /// <summary>
-    /// Retrieves translations for a specific word in a specified language.
+    /// Retrieves translations for a specific word in a specified language code.
     /// </summary>
     /// <param name="word">The word to translate.</param>
-    /// <param name="language">The language to filter translations.</param>
+    /// <param name="languageCode">The language code to filter translations.</param>
     /// <returns>A list of translations for the word.</returns>
-    /// <exception cref="NotSupportedException">Thrown if the language is not supported.</exception>
-    public List<string> GetTranslations(string word, string language)
+    /// <exception cref="NotSupportedException">Thrown if the language code is not supported.</exception>
+    public List<string> GetTranslations(string word, string languageCode)
     {
-        if (!_factory.IsLanguageSupported(language))
+        if (!_factory.IsLanguageSupported(languageCode))
         {
-            throw new NotSupportedException($"Language '{language}' is not supported.");
+            throw new NotSupportedException($"Language code '{languageCode}' is not supported.");
         }
 
         var service = _factory.GetService();
-        return service.GetTranslations(word, language);
+        return service.GetTranslations(word, languageCode);
     }
 
     /// <summary>
@@ -70,10 +70,10 @@ public class WordFacade
     /// </summary>
     /// <param name="word">The source word.</param>
     /// <param name="translation">The translation of the word.</param>
-    /// <param name="language">The language of the word pair.</param>
-    public void AddWordPair(string word, string translation, string language)
+    /// <param name="languageCode">The language code of the word pair.</param>
+    public void AddWordPair(string word, string translation, string languageCode)
     {
         var service = _factory.GetService();
-        service.AddWordPair(word, translation, language);
+        service.AddWordPair(word, translation, languageCode);
     }
 }
