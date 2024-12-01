@@ -16,4 +16,9 @@ public class WordPair
         Translation = translation;
         Language = language;
     }
+    
+    // Parameterless constructor (required for serialization)
+    public WordPair()
+    {
+    }
 }
