@@ -37,7 +37,7 @@ public class AuthorizationServiceDecorator : IAuthorizationService
 
         var principal = await _inner.AuthorizeAsync(token);
 
-        _logger.LogInformation($"Authorization successful for user: {principal.Identity.Name}");
+        _logger.LogInformation("Authorization successful.");
         
         return principal;
     }
