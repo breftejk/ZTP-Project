@@ -145,3 +145,6 @@ temp/
 # Ignore other system files
 $RECYCLE.BIN/
 *.lnk
+
+# DB files
+*.db*
