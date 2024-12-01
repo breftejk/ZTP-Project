@@ -39,7 +39,7 @@ public class WordFacade
             return service.GetAllWordPairs(null);
         }
 
-        if (languageCode is not null && !_factory.IsLanguageSupported(languageCode))
+        if (!_factory.IsLanguageSupported(languageCode))
         {
             throw new NotSupportedException($"Language code '{languageCode}' is not supported.");
         }
