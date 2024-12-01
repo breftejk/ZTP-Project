@@ -16,26 +16,31 @@ public class ImportController : ControllerBase
         _wordFacade = wordFacade;
     }
 
-    [HttpPost("words/{format}")]
-    public IActionResult ImportWords(string format, [FromBody] string data)
+    [HttpPost("words")]
+    [Consumes("text/csv", "application/json", "application/xml")]
+    public IActionResult ImportWords([FromBody] string data)
     {
         try
         {
+            string format = Request.ContentType?.ToLower() ?? string.Empty;
             List<WordPair> importedData;
 
             var importer = new DataImporter();
 
-            switch (format.ToLower())
+            switch (format)
             {
-                case "json":
+                case "application/json":
                     importer.SetImportStrategy(new JsonImportStrategy(_wordFacade));
                     break;
-                case "csv":
+
+                case "text/csv":
                     importer.SetImportStrategy(new CsvImportStrategy(_wordFacade));
                     break;
-                case "xml":
+
+                case "application/xml":
                     importer.SetImportStrategy(new XmlImportStrategy(_wordFacade));
                     break;
+
                 default:
                     return BadRequest($"Unsupported format '{format}'. Supported formats are: json, csv, xml.");
             }
@@ -45,11 +50,6 @@ public class ImportController : ControllerBase
             if (importedData.Count == 0)
             {
                 return BadRequest("No valid word pairs were imported.");
-            }
-
-            foreach (var wordPair in importedData)
-            {
-                _wordFacade.AddWordPair(wordPair.Word, wordPair.Translation, wordPair.LanguageCode);
             }
 
             return Ok("Data imported successfully.");
