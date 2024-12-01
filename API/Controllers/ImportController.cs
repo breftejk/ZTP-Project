@@ -18,10 +18,15 @@ public class ImportController : ControllerBase
 
     [HttpPost("words")]
     [Consumes("text/csv", "application/json", "application/xml")]
-    public IActionResult ImportWords([FromBody] string data)
+    public async Task<IActionResult> ImportWords()
     {
         try
         {
+            using var reader = new StreamReader(Request.Body);
+            var data = await reader.ReadToEndAsync();
+
+            Console.WriteLine(data);
+            
             string format = Request.ContentType?.ToLower() ?? string.Empty;
             List<WordPair> importedData;
 
@@ -52,7 +57,7 @@ public class ImportController : ControllerBase
                 return BadRequest("No valid word pairs were imported.");
             }
 
-            return Ok("Data imported successfully.");
+            return Ok(importedData);
         }
         catch (Exception ex)
         {

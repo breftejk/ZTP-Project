@@ -29,7 +29,7 @@ public class XmlImportStrategy : IDataImportStrategy
         {
             if (IsValidWordPair(wordPair))
             {
-                _wordFacade.AddWordPair(wordPair.Word, wordPair.Translation, wordPair.LanguageCode);
+                wordPair.Id = _wordFacade.AddWordPair(wordPair.Word, wordPair.Translation, wordPair.LanguageCode).Id;
             }
             else
             {

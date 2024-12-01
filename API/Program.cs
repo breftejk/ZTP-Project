@@ -54,6 +54,9 @@ builder.Services.AddControllers();
 // Register the authorization service
 builder.Services.AddTransient<IAuthorizationService, AuthorizationService>();
 
+// Register the decorator for logging additional information in the authorization process
+builder.Services.Decorate<IAuthorizationService, AuthorizationServiceDecorator>();
+
 // Register WordServiceFactory for creating word services
 builder.Services.AddScoped<WordServiceFactory>();
 
@@ -63,9 +66,6 @@ builder.Services.AddScoped<WordFacade>(sp =>
     var factory = sp.GetRequiredService<WordServiceFactory>();
     return new WordFacade(factory);
 });
-
-// Register the decorator for logging additional information in the authorization process
-builder.Services.Decorate<IAuthorizationService, AuthorizationServiceDecorator>();
 
 // Register the authorization filter for securing API endpoints
 builder.Services.AddScoped<AuthorizationFilter>();

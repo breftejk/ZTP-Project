@@ -26,17 +26,9 @@ public class CsvImportStrategy : IDataImportStrategy
         {
             var columns = lines[i].Split(',');
 
-            if (columns.Length == 4 && IsValidWordPair(columns))
+            if (columns.Length == 3 && IsValidWordPair(columns))
             {
-                var wordPair = new WordPair
-                {
-                    Id = int.Parse(columns[0]),
-                    LanguageCode = columns[1],
-                    Word = columns[2],
-                    Translation = columns[3]
-                };
-
-                _wordFacade.AddWordPair(wordPair.Word, wordPair.Translation, wordPair.LanguageCode);
+                var wordPair = _wordFacade.AddWordPair(columns[0], columns[1], columns[2]);
                 wordPairs.Add(wordPair);
             }
             else
@@ -55,6 +47,6 @@ public class CsvImportStrategy : IDataImportStrategy
 
     private bool IsValidWordPair(string[] columns)
     {
-        return !string.IsNullOrEmpty(columns[2]) && !string.IsNullOrEmpty(columns[3]) && !string.IsNullOrEmpty(columns[1]);
+        return !string.IsNullOrEmpty(columns[0]) && !string.IsNullOrEmpty(columns[1]) && !string.IsNullOrEmpty(columns[2]);
     }
 }

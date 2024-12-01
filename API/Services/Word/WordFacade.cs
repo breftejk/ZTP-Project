@@ -71,9 +71,9 @@ public class WordFacade
     /// <param name="word">The source word.</param>
     /// <param name="translation">The translation of the word.</param>
     /// <param name="languageCode">The language code of the word pair.</param>
-    public void AddWordPair(string word, string translation, string languageCode)
+    public WordPair AddWordPair(string word, string translation, string languageCode)
     {
         var service = _factory.GetService();
-        service.AddWordPair(word, translation, languageCode);
+        return service.AddWordPair(word, translation, languageCode);
     }
 }

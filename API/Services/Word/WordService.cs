@@ -39,7 +39,7 @@ public class WordService : IWordService
     }
 
     /// <inheritdoc />
-    public void AddWordPair(string word, string translation, string languageCode)
+    public WordPair AddWordPair(string word, string translation, string languageCode)
     {
         var wordPair = new WordPair
         {
@@ -50,6 +50,8 @@ public class WordService : IWordService
 
         _dbContext.WordPairs.Add(wordPair);
         _dbContext.SaveChanges();
+
+        return wordPair;
     }
 
     /// <inheritdoc />

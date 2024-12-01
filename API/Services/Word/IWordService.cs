@@ -34,7 +34,7 @@ public interface IWordService
     /// <param name="word">The source word.</param>
     /// <param name="translation">The translation of the word.</param>
     /// <param name="languageCode">The language code of the word pair.</param>
-    void AddWordPair(string word, string translation, string languageCode);
+    WordPair AddWordPair(string word, string translation, string languageCode);
 
     /// <summary>
     /// Checks if a language code is supported by verifying if at least one word pair exists.
