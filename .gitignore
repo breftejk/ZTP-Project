@@ -148,4 +148,4 @@ $RECYCLE.BIN/
 
 # DB files
 *.db*
-Migrations/*
+./API/Migrations/*
