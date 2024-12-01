@@ -1,13 +1,20 @@
+using API.Data;
 using API.Filters;
+using API.Data;
 using API.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Register database context with SQLite
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite("Data Source=app.db"));
+
 // Configure Swagger/OpenAPI
 builder.Services.AddSwaggerGen(options =>
 {
-    // Define the Swagger document
+    // Define Swagger document metadata
     options.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "ZTP Project API",
@@ -15,7 +22,7 @@ builder.Services.AddSwaggerGen(options =>
         Description = "This Swagger documentation provides a detailed overview of the API endpoints for the ZTP-Project, a cross-platform application developed with .NET, MAUI, and ASP.NET Core Web API as part of the Advanced Programming Techniques course at Bialystok University of Technology."
     });
 
-    // Configure Swagger to use the Bearer token for authorization
+    // Define Bearer token authentication for Swagger
     var securityScheme = new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -35,53 +42,70 @@ builder.Services.AddSwaggerGen(options =>
 
     var securityRequirement = new OpenApiSecurityRequirement
     {
-        {
-            securityScheme, new string[] {}
-        }
+        { securityScheme, new string[] { } }
     };
 
     options.AddSecurityRequirement(securityRequirement);
 });
 
-// Add controllers
+// Add controllers for handling API requests
 builder.Services.AddControllers();
 
 // Register the authorization service
 builder.Services.AddTransient<IAuthorizationService, AuthorizationService>();
 
-// Register the decorator
+// Register WordServiceFactory for creating word services
+builder.Services.AddScoped<WordServiceFactory>();
+
+// Register WordFacade for managing word-related operations
+builder.Services.AddScoped<WordFacade>(sp =>
+{
+    var factory = sp.GetRequiredService<WordServiceFactory>();
+    return new WordFacade(factory);
+});
+
+// Register the decorator for logging additional information in the authorization process
 builder.Services.Decorate<IAuthorizationService, AuthorizationServiceDecorator>();
 
-// Register the authorization filter
+// Register the authorization filter for securing API endpoints
 builder.Services.AddScoped<AuthorizationFilter>();
 
 var app = builder.Build();
 
-// Enable middleware to serve generated Swagger as a JSON endpoint
-app.UseSwagger();
+using (var scope = app.Services.CreateScope())
+{
+    // Ensure the database is created and seeded with initial data
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    context.Database.EnsureCreated();
+    DatabaseSeeder.SeedDatabase(context);
+}
 
-// Enable middleware to serve Swagger UI (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint
+// Configure Swagger middleware
+app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
+    // Configure the Swagger UI endpoint and appearance
     options.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-    options.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
+    options.RoutePrefix = string.Empty; // Serve Swagger UI at the root of the app
 });
 
-// Configure middleware
+// Configure middleware for development environment
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
     app.MapOpenApi();
 }
 
+// Redirect HTTP to HTTPS
 app.UseHttpsRedirection();
 
+// Configure routing middleware
 app.UseRouting();
 
-// Add UseAuthorization if you are using [Authorize] or other authorization mechanisms
+// Add authorization middleware if using [Authorize] attributes
 app.UseAuthorization();
 
-// Map controllers
+// Map controllers to handle incoming API requests
 app.MapControllers();
 
 // Run the application

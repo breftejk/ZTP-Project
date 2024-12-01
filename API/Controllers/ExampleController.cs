@@ -36,8 +36,8 @@ public class ExampleController : ControllerBase
     [AuthorizationFilter]
     public IActionResult GetSecuredData()
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+        var userEmail = User.FindFirst(ClaimTypes.Email)!.Value;
 
         return Ok(new
         {
