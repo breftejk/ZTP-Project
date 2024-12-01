@@ -1,6 +1,6 @@
 using API.Models;
 
-namespace API.Services;
+namespace API.Services.Word;
 
 /// <summary>
 /// Facade for simplifying interactions with word-related operations.

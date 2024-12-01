@@ -1,6 +1,6 @@
 using API.Models;
 
-namespace API.Services;
+namespace API.Services.Word;
 
 /// <summary>
 /// Interface for managing word pairs.

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using API.Services;
+using API.Services.Authorization;
 
 namespace API.Filters;
 

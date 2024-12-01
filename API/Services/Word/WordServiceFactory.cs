@@ -1,6 +1,6 @@
 using API.Data;
 
-namespace API.Services;
+namespace API.Services.Word;
 
 /// <summary>
 /// Factory to create or retrieve instances of <see cref="IWordService"/>.

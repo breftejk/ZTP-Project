@@ -1,7 +1,7 @@
 using API.Data;
 using API.Filters;
-using API.Data;
-using API.Services;
+using API.Services.Authorization;
+using API.Services.Word;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
