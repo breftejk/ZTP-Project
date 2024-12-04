@@ -12,7 +12,7 @@ public class UserContext
 
     /// <summary>
     /// Gets the user entity associated with this context.
-/// </summary>
+    /// </summary>
     public User User { get; private set; }
 
     /// <summary>
@@ -28,7 +28,7 @@ public class UserContext
 
     /// <summary>
     /// Retrieves all word sets associated with the current user.
-/// </summary>
+    /// </summary>
     /// <param name="includeWordPairs">A flag indicating whether to include word pairs in the result.</param>
     /// <returns>A list of word sets for the user.</returns>
     public List<WordSet> GetWordSets(bool includeWordPairs = false)
@@ -38,7 +38,7 @@ public class UserContext
 
     /// <summary>
     /// Creates a new word set for the current user.
-/// </summary>
+    /// </summary>
     /// <param name="name">The name of the new word set.</param>
     /// <param name="languageCode">The language code of the new word set.</param>
     /// <returns>The created word set object.</returns>
@@ -49,7 +49,7 @@ public class UserContext
 
     /// <summary>
     /// Adds a collection of word pairs to a specific word set belonging to the current user.
-/// </summary>
+    /// </summary>
     /// <param name="wordSetId">The unique identifier of the target word set.</param>
     /// <param name="wordPairIds">A list of word pair IDs to add to the word set.</param>
     public void AddWordPairsToSet(int wordSetId, List<int> wordPairIds)
