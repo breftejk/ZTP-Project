@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using API.Filters;
 
-namespace API.Attributes;
+namespace API.Filters;
 
 /// <summary>
 /// A custom attribute for applying the <see cref="AuthorizationFilter"/> to controllers or actions.

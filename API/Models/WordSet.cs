@@ -1,6 +1,6 @@
 namespace API.Models;
 
-public class WordPair
+public class WordSet
 {
     
 }

@@ -59,4 +59,9 @@ public class WordService : IWordService
     {
         return _dbContext.Languages.Any(l => l.Code.ToLower() == languageCode.ToLower());
     }
+    
+    public bool WordLanguagePresent(string word, string languageCode)
+    {
+        return _dbContext.WordPairs.Any(wp => wp.Word.ToLower() == word.ToLower() && wp.LanguageCode.ToLower() == languageCode.ToLower());
+    }
 }

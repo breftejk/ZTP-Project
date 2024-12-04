@@ -21,20 +21,15 @@ public class CsvImportStrategy : IDataImportStrategy
 
         var wordPairs = new List<WordPair>();
         var lines = data.Split('\n');
+        
+        if(!AllWordPairsValid(wordPairs)) throw new ArgumentException("Invalid CSV data format (missing or incorrect fields).");
 
         for (int i = 1; i < lines.Length; i++)
         {
             var columns = lines[i].Split(',');
 
-            if (columns.Length == 3 && IsValidWordPair(columns))
-            {
-                var wordPair = _wordFacade.AddWordPair(columns[0], columns[1], columns[2]);
-                wordPairs.Add(wordPair);
-            }
-            else
-            {
-                throw new ArgumentException("Invalid CSV data format (missing or incorrect fields).");
-            }
+            var wordPair = _wordFacade.AddWordPair(columns[0], columns[1], columns[2]);
+            wordPairs.Add(wordPair);
         }
 
         return wordPairs;
@@ -47,6 +42,16 @@ public class CsvImportStrategy : IDataImportStrategy
 
     private bool IsValidWordPair(string[] columns)
     {
-        return !string.IsNullOrEmpty(columns[0]) && !string.IsNullOrEmpty(columns[1]) && !string.IsNullOrEmpty(columns[2]);
+        if (string.IsNullOrEmpty(columns[0]) && string.IsNullOrEmpty(columns[1]) &&
+            string.IsNullOrEmpty(columns[2])) return false;
+
+        if (_wordFacade.WordTranslationAlreadyExists(columns[0], columns[1], columns[2])) return false;
+
+        return true;
+    }
+    
+    private bool AllWordPairsValid(List<WordPair> wordPairs)
+    {
+        return wordPairs.All(wordPair => IsValidWordPair(new[] {wordPair.Word, wordPair.Translation, wordPair.LanguageCode}));
     }
 }
