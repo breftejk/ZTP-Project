@@ -1,6 +1,6 @@
 using API.Models;
 
-namespace API.Services.Word.Sets;
+namespace API.Services;
 
 /// <summary>
 /// Interface for the WordSetService, providing methods to manage word sets.

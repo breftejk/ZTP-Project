@@ -1,6 +1,7 @@
 ﻿using API.Models;
+using API.Strategies.DataImport;
 
-namespace API.Services.DataImport;
+namespace API.Services;
 
 public class DataImporter
 {

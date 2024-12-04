@@ -1,7 +1,7 @@
 using System.Text;
 using API.Models;
 
-namespace API.Services.DataExport;
+namespace API.Strategies.DataExport;
 
 /// <summary>
 /// Exports data in CSV format.

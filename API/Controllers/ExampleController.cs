@@ -8,7 +8,7 @@ namespace API.Controllers;
 /// A sample controller demonstrating public and secured endpoints.
 /// </summary>
 [ApiController]
-[Route("api/example")]
+[Route("api/[controller]")]
 public class ExampleController : ControllerBase
 {
     /// <summary>

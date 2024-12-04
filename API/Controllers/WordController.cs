@@ -1,6 +1,6 @@
 using API.Models;
 using Microsoft.AspNetCore.Mvc;
-using API.Services.Word;
+using API.Services;
 
 namespace API.Controllers;
 
@@ -8,18 +8,18 @@ namespace API.Controllers;
 /// API Controller for managing word pairs and translations.
 /// </summary>
 [ApiController]
-[Route("api/words")]
+[Route("api/[controller]")]
 public class WordController : ControllerBase
 {
-    private readonly WordFacade _wordFacade;
+    private readonly IWordService _wordService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WordController"/> class.
     /// </summary>
-    /// <param name="wordFacade">The facade used for accessing word-related operations.</param>
-    public WordController(WordFacade wordFacade)
+    /// <param name="wordService">The service used for accessing word-related operations.</param>
+    public WordController(IWordService wordService)
     {
-        _wordFacade = wordFacade;
+        _wordService = wordService ?? throw new ArgumentNullException(nameof(wordService));
     }
 
     /// <summary>
@@ -30,8 +30,7 @@ public class WordController : ControllerBase
     /// Use "all" to retrieve word pairs from all languages.
     /// </param>
     /// <returns>
-    /// A list of word pairs for the specified language.
-    /// If "all" is used, word pairs from all languages are returned.
+    /// A list of word pairs for the specified language. If "all" is used, word pairs from all languages are returned.
     /// </returns>
     /// <response code="200">Returns the list of word pairs.</response>
     /// <response code="400">If the specified language is not supported.</response>
@@ -42,12 +41,19 @@ public class WordController : ControllerBase
     {
         try
         {
-            var words = _wordFacade.GetAllWords(languageCode);
+            // Handle "all" to return word pairs from all languages
+            var words = _wordService.GetAllWordPairs(languageCode);
+
+            if (words.Count == 0)
+            {
+                return NotFound($"No word pairs found for language '{languageCode}'.");
+            }
+
             return Ok(words);
         }
         catch (NotSupportedException ex)
         {
-            return BadRequest(ex.Message);
+            return BadRequest($"Error: {ex.Message}");
         }
     }
 
@@ -68,7 +74,8 @@ public class WordController : ControllerBase
     {
         try
         {
-            var translations = _wordFacade.GetTranslations(word, languageCode);
+            var translations = _wordService.GetTranslations(word, languageCode);
+
             if (translations.Count == 0)
             {
                 return NotFound($"No translations found for '{word}' in language '{languageCode}'.");
@@ -78,7 +85,7 @@ public class WordController : ControllerBase
         }
         catch (NotSupportedException ex)
         {
-            return BadRequest(ex.Message);
+            return BadRequest($"Error: {ex.Message}");
         }
     }
 
@@ -88,21 +95,27 @@ public class WordController : ControllerBase
     /// <param name="languageCode">The language code for the word pair (e.g., "en", "de").</param>
     /// <param name="request">The word pair to add.</param>
     /// <returns>A success message if the word pair is added successfully.</returns>
-    /// <response code="200">If the word pair is added successfully.</response>
-    /// <response code="400">If the specified language is not supported.</response>
+    /// <response code="201">If the word pair is added successfully.</response>
+    /// <response code="400">If the specified language is not supported or if the request is invalid.</response>
     [HttpPost("{languageCode}")]
-    [ProducesResponseType(typeof(string), 200)]
+    [ProducesResponseType(typeof(string), 201)]
     [ProducesResponseType(typeof(string), 400)]
     public IActionResult AddWordPair(string languageCode, [FromBody] AddWordPairRequest request)
     {
+        if (request == null || string.IsNullOrEmpty(request.Word) || string.IsNullOrEmpty(request.Translation))
+        {
+            return BadRequest("Invalid word pair data.");
+        }
+
         try
         {
-            _wordFacade.AddWordPair(request.Word, request.Translation, languageCode);
-            return Ok("Word pair added.");
+            // Attempt to add the word pair
+            _wordService.AddWordPair(request.Word, request.Translation, languageCode);
+            return CreatedAtAction(nameof(GetTranslations), new { languageCode, word = request.Word }, "Word pair added successfully.");
         }
         catch (NotSupportedException ex)
         {
-            return BadRequest(ex.Message);
+            return BadRequest($"Error: {ex.Message}");
         }
     }
 }

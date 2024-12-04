@@ -2,7 +2,7 @@ using API.Data;
 using API.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Services.Word.Sets;
+namespace API.Services;
 
 /// <summary>
 /// Service for managing word sets containing word pairs in a specific language for a user.

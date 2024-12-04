@@ -1,6 +1,8 @@
 using API.Models;
 
-namespace API.Services.DataExport;
+using API.Strategies.DataExport;
+
+namespace API.Services;
 
 /// <summary>
 /// Context for exporting data using a selected strategy.

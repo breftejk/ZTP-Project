@@ -1,6 +1,6 @@
 using System.Security.Claims;
 
-namespace API.Services.Authorization;
+namespace API.Services;
 
 /// <summary>
 /// Defines the contract for an authorization service that validates a Bearer token and retrieves user claims.

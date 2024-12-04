@@ -2,7 +2,7 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Json;
 
-namespace API.Services.Authorization;
+namespace API.Services;
 
 /// <summary>
 /// A service for authorizing users using a Bearer token and retrieving user information from an external endpoint.

@@ -1,6 +1,6 @@
 ﻿using API.Models;
 
-namespace API.Services.DataImport;
+namespace API.Strategies.DataImport;
 
 public interface IDataImportStrategy
 {

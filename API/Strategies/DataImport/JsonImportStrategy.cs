@@ -1,16 +1,16 @@
 ﻿using System.Text.Json;
 using API.Models;
-using API.Services.Word;
+using API.Services;
 
-namespace API.Services.DataImport;
+namespace API.Strategies.DataImport;
 
 public class JsonImportStrategy : IDataImportStrategy
 {
-    private readonly WordFacade _wordFacade;
+    private readonly IWordService _wordService;
 
-    public JsonImportStrategy(WordFacade wordFacade)
+    public JsonImportStrategy(IWordService wordService)
     {
-        _wordFacade = wordFacade;
+        _wordService = wordService;
     }
 
     public List<WordPair> Import(string data)
@@ -26,7 +26,7 @@ public class JsonImportStrategy : IDataImportStrategy
         {
             if (IsValidWordPair(wordPair))
             {
-                wordPair.Id = _wordFacade.AddWordPair(wordPair.Word, wordPair.Translation, wordPair.LanguageCode)
+                wordPair.Id = _wordService.AddWordPair(wordPair.Word, wordPair.Translation, wordPair.LanguageCode)
                     .Id;
             }
             else

@@ -1,7 +1,8 @@
 using API.Data;
+using API.Decorators;
+using API.Factories;
 using API.Filters;
-using API.Services.Authorization;
-using API.Services.Word;
+using API.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -51,21 +52,18 @@ builder.Services.AddSwaggerGen(options =>
 // Add controllers for handling API requests
 builder.Services.AddControllers();
 
+// Register the WordService
+builder.Services.AddScoped<IWordService, WordService>();
+
+// Register the WordService
+builder.Services.AddScoped<UserFactory>();
+builder.Services.AddScoped<IWordSetService, WordSetService>();
+
 // Register the authorization service
 builder.Services.AddTransient<IAuthorizationService, AuthorizationService>();
 
 // Register the decorator for logging additional information in the authorization process
 builder.Services.Decorate<IAuthorizationService, AuthorizationServiceDecorator>();
-
-// Register WordServiceFactory for creating word services
-builder.Services.AddScoped<WordServiceFactory>();
-
-// Register WordFacade for managing word-related operations
-builder.Services.AddScoped<WordFacade>(sp =>
-{
-    var factory = sp.GetRequiredService<WordServiceFactory>();
-    return new WordFacade(factory);
-});
 
 // Register the authorization filter for securing API endpoints
 builder.Services.AddScoped<AuthorizationFilter>();

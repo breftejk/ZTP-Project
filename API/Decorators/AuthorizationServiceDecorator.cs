@@ -1,6 +1,8 @@
 using System.Security.Claims;
 
-namespace API.Services.Authorization;
+using API.Services;
+
+namespace API.Decorators;
 
 /// <summary>
 /// A decorator for the <see cref="IAuthorizationService"/> that adds logging functionality to the authorization process.

@@ -2,7 +2,7 @@ using API.Data;
 using API.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Services.Word;
+namespace API.Services;
 
 /// <summary>
 /// Service for managing word pairs stored in the database.

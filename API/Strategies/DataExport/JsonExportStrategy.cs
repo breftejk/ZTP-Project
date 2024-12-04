@@ -1,7 +1,7 @@
 using System.Text.Json;
 using API.Models;
 
-namespace API.Services.DataExport;
+namespace API.Strategies.DataExport;
 
 /// <summary>
 /// Exports data in JSON format.

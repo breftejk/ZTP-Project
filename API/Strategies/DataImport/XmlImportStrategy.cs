@@ -1,17 +1,17 @@
 ﻿using System.Xml;
 using System.Xml.Serialization;
 using API.Models;
-using API.Services.Word;
+using API.Services;
 
-namespace API.Services.DataImport;
+namespace API.Strategies.DataImport;
 
 public class XmlImportStrategy : IDataImportStrategy
 {
-    private readonly WordFacade _wordFacade;
+    private readonly IWordService _wordService;
 
-    public XmlImportStrategy(WordFacade wordFacade)
+    public XmlImportStrategy(IWordService wordService)
     {
-        _wordFacade = wordFacade;
+        _wordService = wordService;
     }
 
     public List<WordPair> Import(string data)
@@ -29,7 +29,7 @@ public class XmlImportStrategy : IDataImportStrategy
         {
             if (IsValidWordPair(wordPair))
             {
-                wordPair.Id = _wordFacade.AddWordPair(wordPair.Word, wordPair.Translation, wordPair.LanguageCode).Id;
+                wordPair.Id = _wordService.AddWordPair(wordPair.Word, wordPair.Translation, wordPair.LanguageCode).Id;
             }
             else
             {

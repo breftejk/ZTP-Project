@@ -1,15 +1,15 @@
 ﻿using API.Models;
-using API.Services.Word;
+using API.Services;
 
-namespace API.Services.DataImport;
+namespace API.Strategies.DataImport;
 
 public class CsvImportStrategy : IDataImportStrategy
 {
-    private readonly WordFacade _wordFacade;
+    private readonly IWordService _wordService;
 
-    public CsvImportStrategy(WordFacade wordFacade)
+    public CsvImportStrategy(IWordService wordService)
     {
-        _wordFacade = wordFacade;
+        _wordService = wordService;
     }
 
     public List<WordPair> Import(string data)
@@ -28,7 +28,7 @@ public class CsvImportStrategy : IDataImportStrategy
         {
             var columns = lines[i].Split(',');
 
-            var wordPair = _wordFacade.AddWordPair(columns[0], columns[1], columns[2]);
+            var wordPair = _wordService.AddWordPair(columns[0], columns[1], columns[2]);
             wordPairs.Add(wordPair);
         }
 
@@ -44,9 +44,7 @@ public class CsvImportStrategy : IDataImportStrategy
     {
         if (string.IsNullOrEmpty(columns[0]) && string.IsNullOrEmpty(columns[1]) &&
             string.IsNullOrEmpty(columns[2])) return false;
-
-        if (_wordFacade.WordTranslationAlreadyExists(columns[0], columns[1], columns[2])) return false;
-
+        
         return true;
     }
     

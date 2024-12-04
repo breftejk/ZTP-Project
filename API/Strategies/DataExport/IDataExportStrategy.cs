@@ -1,6 +1,6 @@
 using API.Models;
 
-namespace API.Services.DataExport;
+namespace API.Strategies.DataExport;
 
 /// <summary>
 /// Interface for exporting data in different formats.

@@ -1,46 +1,44 @@
 using API.Models;
 using Microsoft.AspNetCore.Mvc;
-using API.Services.DataExport;
-using API.Services.Word;
+using API.Services;
+using API.Strategies.DataExport;
 
 namespace API.Controllers;
 
 /// <summary>
-/// API Controller for exporting word pairs in different formats.
+/// API Controller for exporting word pairs in various formats.
 /// </summary>
 [ApiController]
-[Route("api/export")]
+[Route("api/[controller]")]
 public class ExportController : ControllerBase
 {
-    private readonly WordFacade _wordFacade;
+    private readonly IWordService _wordService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ExportController"/> class.
     /// </summary>
-    /// <param name="wordFacade">The facade used for accessing word-related operations.</param>
-    public ExportController(WordFacade wordFacade)
+    /// <param name="wordService">Service to handle word-related operations.</param>
+    public ExportController(IWordService wordService)
     {
-        _wordFacade = wordFacade;
+        _wordService = wordService ?? throw new ArgumentNullException(nameof(wordService));
     }
 
     /// <summary>
-    /// Exports word pairs for a specific language or all languages in the specified format.
+    /// Exports word pairs for a specific language or all languages in the requested format.
     /// </summary>
-    /// <param name="languageCode">The language code to export word pairs for. Use "all" to export all languages.</param>
+    /// <param name="languageCode">The language code for the word pairs to export. Use "all" for all languages.</param>
     /// <param name="format">
-    /// The export format. Supported values:
+    /// The desired export format. Supported formats include:
     /// <list type="bullet">
-    /// <item><term>json</term><description>Exports in JSON format.</description></item>
-    /// <item><term>csv</term><description>Exports in CSV format.</description></item>
-    /// <item><term>xml</term><description>Exports in XML format.</description></item>
+    /// <item><term>json</term><description>JSON format</description></item>
+    /// <item><term>csv</term><description>CSV format</description></item>
+    /// <item><term>xml</term><description>XML format</description></item>
     /// </list>
     /// </param>
-    /// <returns>
-    /// Returns the exported data in the specified format.
-    /// </returns>
+    /// <returns>The exported data in the specified format.</returns>
     /// <response code="200">Returns the exported data.</response>
-    /// <response code="400">If the format is unsupported or the language is invalid.</response>
-    /// <response code="404">If no word pairs are found for the specified language.</response>
+    /// <response code="400">If the requested format is unsupported or invalid.</response>
+    /// <response code="404">If no word pairs are found for the given language code.</response>
     [HttpGet("words/{languageCode}/{format}")]
     [ProducesResponseType(typeof(string), 200)]
     [ProducesResponseType(typeof(string), 400)]
@@ -49,24 +47,17 @@ public class ExportController : ControllerBase
     {
         try
         {
-            List<WordPair> data;
+            // Retrieve the word pairs based on the language code
+            var wordPairs = languageCode.ToLower() == "all"
+                ? _wordService.GetAllWordPairs(null)
+                : _wordService.GetAllWordPairs(languageCode);
 
-            // Handle "all" to export all word pairs
-            if (languageCode == "all")
-            {
-                data = _wordFacade.GetAllWords(null);
-            }
-            else
-            {
-                data = _wordFacade.GetAllWords(languageCode);
-            }
-
-            if (data.Count == 0)
+            if (!wordPairs.Any())
             {
                 return NotFound($"No word pairs found for language '{languageCode}'.");
             }
 
-            // Use Strategy Pattern to select the export format
+            // Select the appropriate export strategy based on the format
             var exporter = new DataExporter();
 
             switch (format.ToLower())
@@ -84,9 +75,9 @@ public class ExportController : ControllerBase
                     return BadRequest($"Unsupported format '{format}'. Supported formats are: json, csv, xml.");
             }
 
-            // Generate the export result
-            var result = exporter.ExportData(data);
-            return Ok(result);
+            // Perform export and return the result
+            var exportResult = exporter.ExportData(wordPairs);
+            return Ok(exportResult);
         }
         catch (NotSupportedException ex)
         {
@@ -96,7 +87,7 @@ public class ExportController : ControllerBase
 }
 
 /// <summary>
-/// Supported export formats.
+/// Supported formats for data export.
 /// </summary>
 public enum ExportFormat
 {
