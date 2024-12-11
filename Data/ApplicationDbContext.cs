@@ -15,6 +15,7 @@ namespace ZTP_Project.Data
         public DbSet<GroupWord> GroupWords { get; set; }
         public DbSet<Language> Languages { get; set; }
         public DbSet<Word> Words { get; set; }
+        public DbSet<ActivityLog> ActivityLogs { get; set; }
 
         /// <summary>
         /// Configures entity relationships and constraints.

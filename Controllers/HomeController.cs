@@ -24,16 +24,7 @@ namespace ZTP_Project.Controllers
         {
             return View();
         }
-
-        /// <summary>
-        /// Displays the privacy policy page.
-        /// </summary>
-        /// <returns>The privacy policy view.</returns>
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
+        
         /// <summary>
         /// Handles application errors and displays the error page.
         /// </summary>

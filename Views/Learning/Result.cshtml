@@ -1,0 +1,22 @@
+@model ZTP_Project.Models.LearningResult
+
+<h2>Result</h2>
+
+@if (Model.IsCorrect)
+{
+<div class="alert alert-success">Correct answer!</div>
+}
+else
+{
+<div class="alert alert-danger">Incorrect answer! The correct translation is: '@Model.CorrectAnswer'.</div>
+}
+
+<p>Your answer: @Model.UserAnswer</p>
+
+<form method="get" asp-action="Question">
+    <button type="submit" class="btn btn-primary">Next word</button>
+</form>
+
+<form method="get" asp-action="SelectMode">
+    <button type="submit" class="btn btn-secondary mt-2">Select another group and/or mode</button>
+</form>

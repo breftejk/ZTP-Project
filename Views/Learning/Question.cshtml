@@ -1,0 +1,46 @@
+@model ZTP_Project.Models.Word
+
+@{
+    var mode = ViewBag.Mode as string;
+}
+
+<h2>Question</h2>
+
+@if (mode == "FillInTheBlank")
+{
+    <p><strong>Fill in the blank for the following word:</strong> @Model.Original</p>
+}
+else if (mode == "Flashcards")
+{
+    <p><strong>Translate the word (flashcard):</strong> @Model.Original</p>
+}
+else
+{
+    <p><strong>Translate the word:</strong> @Model.Original</p>
+}
+
+<form method="post" asp-action="SubmitAnswer">
+    <input type="hidden" name="wordId" value="@Model.Id" />
+    <input type="hidden" name="mode" value="@mode" />
+
+    @if (mode == "MultipleChoice" && ViewBag.Options != null)
+    {
+        <p>Select the correct translation:</p>
+        @foreach (var option in (List<string>)ViewBag.Options)
+        {
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="userAnswer" id="@option" value="@option" required />
+                <label class="form-check-label" for="@option">@option</label>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="form-group">
+            <label for="userAnswer">Your answer:</label>
+            <input type="text" id="userAnswer" name="userAnswer" class="form-control" placeholder="Enter the translation" required />
+        </div>
+    }
+
+    <button type="submit" class="btn btn-primary mt-2">Check</button>
+</form>

@@ -2,22 +2,30 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ZTP_Project.Data;
 using ZTP_Project.Factories;
+using ZTP_Project.Observers;
 using ZTP_Project.Repositories;
+using ZTP_Project.Strategies.Learning;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure database connection
+//
+// Database Configuration
+//
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Configure authorization policies
+//
+// Authorization Policies
+//
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("ImportPolicy", policy =>
         policy.RequireRole("Admin", "Importer"));
 });
 
-// Configure Identity services
+//
+// Identity Configuration
+//
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
     {
         options.Password.RequireDigit = true;
@@ -29,63 +37,109 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-// Register repositories
+//
+// Observers and Notifiers
+//
+builder.Services.AddScoped<ActivityNotifier>();
+builder.Services.AddScoped<IActivityObserver, ActivityLogger>();
+
+//
+// Repositories
+//
+builder.Services.AddScoped<IActivityLogRepository, ActivityLogRepository>();
 builder.Services.AddScoped<IGroupRepository, GroupRepository>();
 builder.Services.AddScoped<IWordRepository, WordRepository>();
 builder.Services.AddScoped<ILanguageRepository, LanguageRepository>();
 
-// Register exporter and importer factories
+//
+// Learning Strategies and Factories
+//
+builder.Services.AddScoped<FlashcardsStrategy>();
+builder.Services.AddScoped<MultipleChoiceStrategy>();
+builder.Services.AddScoped<FillInTheBlankStrategy>();
+builder.Services.AddScoped<ILearningStrategyFactory, LearningStrategyFactory>();
+
+//
+// Exporters and Importers
+//
 builder.Services.AddSingleton<IExporterFactory, ExporterFactory>();
 builder.Services.AddSingleton<IImporterFactory, ImporterFactory>();
 
-// Configure session
+//
+// Session Configuration
+//
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession();
 
-// Add controllers and views to the application
+//
+// MVC and Razor Pages
+//
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Enable session usage
+//
+// Session Middleware
+//
 app.UseSession();
 
-// Seed database with initial data
+//
+// Database Seeding
+//
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+    var notifier = scope.ServiceProvider.GetRequiredService<ActivityNotifier>();
+    var logger = scope.ServiceProvider.GetRequiredService<IActivityObserver>();
+    notifier.Attach(logger);
+
     try
     {
         SeedData.Initialize(services).Wait();
     }
     catch (Exception ex)
     {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while seeding the database.");
+        var logger2 = services.GetRequiredService<ILogger<Program>>();
+        logger2.LogError(ex, "An error occurred while seeding the database.");
     }
 }
 
-// Configure the HTTP request pipeline
+//
+// Error Handling and HTTPS
+//
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
-
 app.UseHttpsRedirection();
-app.UseRouting();
 
+//
+// Routing, Authentication, and Authorization
+//
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapStaticAssets(); // Enable serving static files
+//
+// Static Assets
+//
+app.MapStaticAssets();
 
-// Configure the default route
+//
+// Default Route
+//
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
-app.MapRazorPages(); // Map Razor Pages
+//
+// Razor Pages
+//
+app.MapRazorPages();
 
-app.Run(); // Start the application
+//
+// Run the Application
+//
+app.Run();

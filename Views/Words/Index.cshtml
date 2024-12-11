@@ -2,6 +2,11 @@
 
 <h2>Words</h2>
 
+<a asp-action="Create" class="btn btn-primary">Add New Word</a>
+<a asp-action="ExportData" class="btn btn-secondary">Export Data</a>
+<a asp-action="ImportData" class="btn btn-info">Import Data</a>
+
+
 <table class="table">
     <thead>
     <tr>
@@ -18,10 +23,8 @@
             <td>@word.Id</td>
             <td>@word.Original</td>
             <td>@word.Translation</td>
-            <td>@word.LanguageId</td>
+            <td>@word.Language!.Name</td>
         </tr>
     }
     </tbody>
 </table>
-
-<a asp-action="Create" class="btn btn-primary">Add New Word</a>

@@ -1,4 +1,5 @@
 using System.Text;
+using ZTP_Project.Attributes;
 using ZTP_Project.Interfaces;
 
 namespace ZTP_Project.Strategies.Importers
@@ -14,7 +15,10 @@ namespace ZTP_Project.Strategies.Importers
         {
             var csv = Encoding.UTF8.GetString(data);
             var lines = csv.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-            var properties = typeof(T).GetProperties();
+            var properties = typeof(T)
+                .GetProperties()
+                .Where(p => !Attribute.IsDefined(p, typeof(CsvIgnoreAttribute)))
+                .ToArray();
 
             var list = new List<T>();
 

@@ -13,6 +13,9 @@ namespace ZTP_Project.Models
         /// <summary>
         /// Gets or sets the unique identifier of the word.
         /// </summary>
+        [CsvIgnore]
+        [XmlIgnore]
+        [JsonIgnore]
         public int Id { get; set; }
 
         /// <summary>
