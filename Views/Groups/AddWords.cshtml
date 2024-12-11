@@ -1,6 +1,6 @@
 @model IEnumerable<ZTP_Project.Models.Word>
 
-<h2>Manage Words in Group</h2>
+<h2>Manage Words in <i>@ViewBag.GroupName</i> Group</h2>
 
 @if (TempData["Success"] != null)
 {
@@ -25,7 +25,7 @@
     </tr>
     </thead>
     <tbody>
-    @foreach (var word in Model)
+    @foreach (var word in Model.OrderByDescending(w => ViewBag.GroupWords.Contains(w.Id)))
     {
         <tr>
             <td>@word.Original</td>

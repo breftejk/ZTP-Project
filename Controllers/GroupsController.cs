@@ -122,6 +122,7 @@ namespace ZTP_Project.Controllers
 
             ViewBag.GroupId = groupId;
             ViewBag.GroupWords = groupWordIds;
+            ViewBag.GroupName = group.Name;
 
             return View(words);
         }
