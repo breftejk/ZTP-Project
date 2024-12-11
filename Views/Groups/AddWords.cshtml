@@ -1,0 +1,54 @@
+@model IEnumerable<ZTP_Project.Models.Word>
+
+<h2>Manage Words in Group</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Original</th>
+        <th>Translation</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var word in Model)
+    {
+        <tr>
+            <td>@word.Original</td>
+            <td>@word.Translation</td>
+            <td>
+                @if (ViewBag.GroupWords.Contains(word.Id)) 
+                {
+                    <form asp-action="RemoveWordFromGroup" method="post">
+                        <input type="hidden" name="groupId" value="@ViewBag.GroupId" />
+                        <input type="hidden" name="wordId" value="@word.Id" />
+                        <button type="submit" class="btn btn-danger">Remove</button>
+                    </form>
+                }
+                else
+                {
+                    <form asp-action="AddWordToGroup" method="post">
+                        <input type="hidden" name="groupId" value="@ViewBag.GroupId" />
+                        <input type="hidden" name="wordId" value="@word.Id" />
+                        <button type="submit" class="btn btn-primary">Add</button>
+                    </form>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

@@ -1,0 +1,82 @@
+# Compiled binary output
+bin/
+obj/
+out/
+
+# Rider-specific files
+.idea/
+*.iml
+
+# macOS system files
+.DS_Store
+
+# User-specific files
+*.user
+*.userosscache
+*.suo
+*.swp
+*.temp
+*.tmp
+*.ide
+.vscode/
+
+# Logs
+*.log
+
+# Rider workspace
+.idea/workspace.xml
+.idea/tasks.xml
+
+# Visual Studio and Rider solution options
+.vs/
+.idea/.idea/
+
+# Application Insights
+ApplicationInsights.config
+
+# Database
+*.mdf
+*.ldf
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+Migrations
+
+# Publish
+.publish/
+
+# Dependency folders
+node_modules/
+bower_components/
+
+# Packages directory can be restored
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+*.lock.json
+
+# Build directories
+project.lock.json
+artifacts/
+
+# Recycle Bin
+$RECYCLE.BIN/
+
+# Rider JetBrains IDE files
+.idea/
+.idea_modules/
+.idea/workspace.xml
+.idea/httpRequests/
+.idea/tasks/
+.idea/*.xml
+.idea/.rider/
+
+# macOS Resource Forks
+._*
+
+# Temporary files
+*.bak
+*.tmp
+*.temp
+~$*

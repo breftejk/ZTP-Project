@@ -1,0 +1,28 @@
+@model ZTP_Project.Models.Word
+
+<h2>Add New Word</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="Original"></label>
+        <input asp-for="Original" class="form-control" />
+        <span asp-validation-for="Original" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Translation"></label>
+        <input asp-for="Translation" class="form-control" />
+        <span asp-validation-for="Translation" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="LanguageId">Language</label>
+        <select asp-for="LanguageId" asp-items="@(new SelectList(ViewBag.Languages, "Id", "Name"))" class="form-control">
+            <option value="">-- Select Language --</option>
+        </select>
+        <span asp-validation-for="LanguageId" class="text-danger"></span>
+        @if (ViewBag.Languages == null)
+        {
+        <p style="color:red;">Languages list is empty!</p>
+        }
+    </div>
+    <button type="submit" class="btn btn-success">Save</button>
+</form>

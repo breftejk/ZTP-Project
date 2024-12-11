@@ -1,0 +1,27 @@
+@model IEnumerable<ZTP_Project.Models.Word>
+
+<h2>Words</h2>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Original</th>
+        <th>Translation</th>
+        <th>Language</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var word in Model)
+    {
+        <tr>
+            <td>@word.Id</td>
+            <td>@word.Original</td>
+            <td>@word.Translation</td>
+            <td>@word.LanguageId</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<a asp-action="Create" class="btn btn-primary">Add New Word</a>

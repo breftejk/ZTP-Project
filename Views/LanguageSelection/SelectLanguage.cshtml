@@ -1,0 +1,16 @@
+@model IEnumerable<ZTP_Project.Models.Language>
+
+<h2>Select Language</h2>
+<form asp-action="SetLanguage" method="post">
+    <div class="form-group">
+        <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+        <label for="languageId">Language</label>
+        <select id="languageId" name="languageId" class="form-control">
+            @foreach (var language in Model)
+            {
+                <option value="@language.Id">@language.Name</option>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>

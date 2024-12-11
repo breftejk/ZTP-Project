@@ -1,0 +1,19 @@
+@model ZTP_Project.Models.Language
+
+<h2>Add New Language</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="Code"></label>
+        <input asp-for="Code" class="form-control" />
+        <span asp-validation-for="Code" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-success">Save</button>
+    <span asp-validation-for="Code" class="text-danger"></span>
+    <span asp-validation-for="Name" class="text-danger"></span>
+</form>

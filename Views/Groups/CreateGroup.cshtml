@@ -1,0 +1,30 @@
+@model ZTP_Project.Models.Group
+
+@{
+    ViewData["Title"] = "Create Group";
+}
+
+<h2>Create New Group</h2>
+
+<!-- Wyświetlanie komunikatów -->
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<form asp-action="CreateGroup" method="post">
+    <div class="form-group">
+        <label for="name">Group Name</label>
+        <input type="text" name="name" id="name" placeholder="Group Name" class="form-control" required />
+    </div>
+    <button type="submit" class="btn btn-success">Create Group</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,25 @@
+@model IEnumerable<ZTP_Project.Models.Language>
+
+<h2>Languages</h2>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Code</th>
+        <th>Name</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var language in Model)
+    {
+        <tr>
+            <td>@language.Id</td>
+            <td>@language.Code</td>
+            <td>@language.Name</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<a asp-action="Create" class="btn btn-primary">Add New Language</a>

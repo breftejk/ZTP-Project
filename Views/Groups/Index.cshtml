@@ -1,0 +1,45 @@
+@model IEnumerable<ZTP_Project.Models.Group>
+
+@{
+ViewData["Title"] = "Your Groups";
+}
+
+<h2>Your Groups</h2>
+
+@if (ViewBag.CurrentLanguage != null)
+{
+<h4>Current Language: @ViewBag.CurrentLanguage</h4>
+}
+
+@if (TempData["Success"] != null)
+{
+<div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+<div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Language</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var group in Model)
+    {
+    <tr>
+        <td>@group.Name</td>
+        <td>@group.Language.Name</td>
+        <td>
+            <a asp-action="AddWords" asp-route-groupId="@group.Id" class="btn btn-primary">Manage Words</a>
+        </td>
+    </tr>
+    }
+    </tbody>
+</table>
+
+<a asp-action="CreateGroup" class="btn btn-success mb-3">Create New Group</a>

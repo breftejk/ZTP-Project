@@ -1,0 +1,27 @@
+@{
+    ViewData["Title"] = "Export Words";
+}
+
+<h2>Export Words</h2>
+
+<form asp-action="ExportData" method="post">
+    <div class="form-group">
+        <label for="format">Select Format:</label>
+        <select id="format" name="format" class="form-control" required>
+            <option value="">-- Select Format --</option>
+            <option value="json">JSON</option>
+            <option value="xml">XML</option>
+            <option value="csv">CSV</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Export</button>
+</form>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger mt-3">@TempData["Error"]</div>
+}
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success mt-3">@TempData["Success"]</div>
+}
