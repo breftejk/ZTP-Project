@@ -1,3 +1,5 @@
+using System.IO;
+using System.Text;
 using System.Xml.Serialization;
 
 namespace ZTP_Project.Data.Export
@@ -8,7 +10,10 @@ namespace ZTP_Project.Data.Export
     /// <typeparam name="T">The type of the data to export.</typeparam>
     public class XmlDataExporter<T> : IDataExporter<T>
     {
+        /// <inheritdoc />
         public string ContentType => "application/xml";
+
+        /// <inheritdoc />
         public string FileExtension => ".xml";
 
         /// <inheritdoc />

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System.ComponentModel.DataAnnotations;
 using ZTP_Project.Data.Export;
 using ZTP_Project.Data.Import;
@@ -11,34 +12,49 @@ namespace ZTP_Project.Controllers
     /// <summary>
     /// Controller for managing words and their import/export functionality.
     /// </summary>
-    public class WordsController : Controller
+    [Authorize]
+    public class WordsController : BaseController
     {
         private readonly IWordRepository _wordRepository;
         private readonly ILanguageRepository _languageRepository;
         private readonly IDataExporters _dataExporters;
         private readonly IDataImporters _dataImporters;
+        private readonly ILogger<WordsController> _logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WordsController"/> class.
+        /// </summary>
+        /// <param name="wordRepository">Repository for word operations.</param>
+        /// <param name="languageRepository">Repository for language operations.</param>
+        /// <param name="dataExporters">Service for data export operations.</param>
+        /// <param name="dataImporters">Service for data import operations.</param>
+        /// <param name="logger">Logger instance.</param>
         public WordsController(
             IWordRepository wordRepository,
             ILanguageRepository languageRepository,
             IDataExporters dataExporters,
-            IDataImporters dataImporters)
+            IDataImporters dataImporters,
+            ILogger<WordsController> logger)
         {
             _wordRepository = wordRepository;
             _languageRepository = languageRepository;
             _dataExporters = dataExporters;
             _dataImporters = dataImporters;
+            _logger = logger;
         }
 
         /// <summary>
-        /// Displays a list of all words.
+        /// Displays a paginated list of all words.
         /// </summary>
+        /// <param name="page">The current page number.</param>
+        /// <param name="pageSize">The number of items per page.</param>
         /// <returns>A view with the list of words.</returns>
         public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
         {
             var (words, totalCount) = await _wordRepository.GetPaginatedAsync(page, pageSize);
             var languages = await _languageRepository.GetAllAsync();
 
+            // Assign language details to each word
             foreach (var word in words)
             {
                 word.Language = languages.FirstOrDefault(l => l.Id == word.LanguageId);
@@ -69,13 +85,14 @@ namespace ZTP_Project.Controllers
         /// <param name="word">The word to create.</param>
         /// <returns>A redirect to the list of words or an error view if creation fails.</returns>
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Word word)
         {
             if (!ModelState.IsValid)
             {
                 foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
                 {
-                    Console.WriteLine(error.ErrorMessage);
+                    _logger.LogWarning($"Validation error: {error.ErrorMessage}");
                 }
                 ViewBag.Languages = await _languageRepository.GetAllAsync();
                 return View(word);
@@ -85,12 +102,14 @@ namespace ZTP_Project.Controllers
             {
                 await _wordRepository.AddAsync(word);
                 await _wordRepository.SaveChangesAsync();
+                TempData["Success"] = "Word created successfully.";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
+                _logger.LogError(ex, "Error creating word.");
                 ViewBag.Languages = await _languageRepository.GetAllAsync();
+                ModelState.AddModelError(string.Empty, "An error occurred while creating the word.");
                 return View(word);
             }
         }
@@ -108,18 +127,21 @@ namespace ZTP_Project.Controllers
         /// <param name="format">The format for export (e.g., JSON, XML, CSV).</param>
         /// <returns>A file containing the exported data.</returns>
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ExportData(string format)
         {
             if (string.IsNullOrEmpty(format))
             {
                 TempData["Error"] = "Please select a format for export.";
-                return RedirectToAction("Export");
+                return RedirectToAction("ExportData");
             }
 
             try
             {
                 var words = await _wordRepository.FindAsync(w => true);
                 var languages = await _languageRepository.GetAllAsync();
+
+                // Assign language details to each word
                 foreach (var word in words)
                 {
                     word.Language = languages.FirstOrDefault(l => l.Id == word.LanguageId);
@@ -133,13 +155,15 @@ namespace ZTP_Project.Controllers
             }
             catch (NotSupportedException ex)
             {
+                _logger.LogWarning(ex, "Export format not supported.");
                 TempData["Error"] = ex.Message;
-                return RedirectToAction("Export");
+                return RedirectToAction("ExportData");
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error during export.");
                 TempData["Error"] = "An error occurred during export.";
-                return RedirectToAction("Export");
+                return RedirectToAction("ExportData");
             }
         }
 
@@ -159,6 +183,7 @@ namespace ZTP_Project.Controllers
         /// <returns>A redirect to the list of words or an error view if import fails.</returns>
         [HttpPost]
         [Authorize(Policy = "ImportPolicy")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ImportData(string format, IFormFile file)
         {
             if (string.IsNullOrEmpty(format))
@@ -229,16 +254,19 @@ namespace ZTP_Project.Controllers
             }
             catch (NotSupportedException ex)
             {
+                _logger.LogWarning(ex, "Import format not supported.");
                 TempData["Error"] = ex.Message;
                 return RedirectToAction("ImportData");
             }
             catch (InvalidOperationException ex)
             {
+                _logger.LogError(ex, "Import operation failed.");
                 TempData["Error"] = $"Import failed: {ex.Message}";
                 return RedirectToAction("ImportData");
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Unexpected error during import.");
                 TempData["Error"] = "An unexpected error occurred during import.";
                 return RedirectToAction("ImportData");
             }

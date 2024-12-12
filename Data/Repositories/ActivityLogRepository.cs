@@ -14,26 +14,41 @@ namespace ZTP_Project.Data.Repositories
         /// <param name="context">The application's database context.</param>
         public ActivityLogRepository(ApplicationDbContext context) : base(context) { }
 
-        /// <summary>
-        /// Retrieves all activity logs associated with a specific user.
-        /// </summary>
-        /// <param name="userId">The user's ID.</param>
-        /// <returns>An enumerable collection of activity logs.</returns>
+        /// <inheritdoc />
         public async Task<IEnumerable<ActivityLog>> GetByUserIdAsync(string userId)
         {
             return await _dbSet.Where(log => log.UserId == userId).ToListAsync();
         }
 
-        /// <summary>
-        /// Retrieves recent activity logs for a specific user, filtered by a number of days.
-        /// </summary>
-        /// <param name="userId">The user's ID.</param>
-        /// <param name="days">The number of days to look back from the current date.</param>
-        /// <returns>An enumerable collection of recent activity logs.</returns>
-        public async Task<IEnumerable<ActivityLog>> GetRecentLogsAsync(string userId, int days)
+        /// <inheritdoc />
+        public async Task MarkAsCorrectedAsync(string userId, int wordId)
+        {
+            var log = await _dbSet
+                .FirstOrDefaultAsync(l => l.UserId == userId && l.WordId == wordId && !l.Corrected);
+
+            if (log != null)
+            {
+                log.Corrected = true;
+                await SaveChangesAsync();
+            }
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<ActivityLog>> GetRecentLogsAsync(string userId, int languageId, int days)
         {
             var cutoff = DateTime.Now.AddDays(-days);
-            return await _dbSet.Where(log => log.UserId == userId && log.Timestamp >= cutoff).ToListAsync();
+
+            return await _dbSet
+                .Where(log => log.UserId == userId && log.Timestamp >= cutoff)
+                .Join(
+                    _context.Words, // Join with Words
+                    log => log.WordId, // Match WordId in ActivityLog
+                    word => word.Id, // Match Id in Word
+                    (log, word) => new { log, word } // Create a new result
+                )
+                .Where(joined => joined.word.LanguageId == languageId) // Filter by LanguageId
+                .Select(joined => joined.log) // Select the ActivityLog
+                .ToListAsync();
         }
     }
 }

@@ -30,5 +30,7 @@
 
     <input type="hidden" name="isNewSession" value="true" />
 
+    <a asp-action="Question" asp-route-isRepeatSession="true" asp-route-isNewSession="true" asp-route-mode="Flashcards" class="btn btn-warning mt-3">Repeat Words</a>
+
     <button type="submit" class="btn btn-primary mt-2">Start</button>
 </form>

@@ -11,7 +11,6 @@ namespace ZTP_Project.Learning.Strategies
     {
         private readonly ActivityNotifier _notifier;
         private readonly IWordRepository _wordRepository;
-        private readonly Random _random = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MultipleChoiceStrategy"/> class.

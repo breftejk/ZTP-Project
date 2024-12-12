@@ -6,6 +6,8 @@ using ZTP_Project.Data.Import;
 using ZTP_Project.Data.Repositories;
 using ZTP_Project.Learning.Strategies;
 using ZTP_Project.Learning.Activities;
+using ZTP_Project.Learning.Challenges;
+using ZTP_Project.Learning.RepeatableWords;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,9 +50,18 @@ builder.Services.AddScoped<IActivityObserver, ActivityLogger>();
 // Repositories
 //
 builder.Services.AddScoped<IActivityLogRepository, ActivityLogRepository>();
+builder.Services.AddScoped<IDailyChallengeRepository, DailyChallengeRepository>();
 builder.Services.AddScoped<IGroupRepository, GroupRepository>();
 builder.Services.AddScoped<IWordRepository, WordRepository>();
 builder.Services.AddScoped<ILanguageRepository, LanguageRepository>();
+builder.Services.AddScoped<ActivityLogger>();
+
+//
+// Services
+//
+builder.Services.AddScoped<DailyChallengeService>();
+builder.Services.AddScoped<RepeatableWordsService>();
+
 
 //
 // Learning Strategies and Export
@@ -58,7 +69,7 @@ builder.Services.AddScoped<ILanguageRepository, LanguageRepository>();
 builder.Services.AddScoped<FlashcardsStrategy>();
 builder.Services.AddScoped<MultipleChoiceStrategy>();
 builder.Services.AddScoped<FillInTheBlankStrategy>();
-builder.Services.AddScoped<ILearningStrategyFactory, LearningStrategyFactory>();
+builder.Services.AddScoped<ILearningStrategies, LearningStrategies>();
 
 //
 // Exporters and Importers

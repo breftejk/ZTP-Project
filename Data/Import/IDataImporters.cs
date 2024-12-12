@@ -1,7 +1,9 @@
+using System;
+
 namespace ZTP_Project.Data.Import
 {
     /// <summary>
-    /// Factory interface for creating importers.
+    /// Defines a contract for creating importers based on the specified format.
     /// </summary>
     public interface IDataImporters
     {

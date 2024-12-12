@@ -16,6 +16,7 @@ namespace ZTP_Project.Data
         public DbSet<Language> Languages { get; set; }
         public DbSet<Word> Words { get; set; }
         public DbSet<ActivityLog> ActivityLogs { get; set; }
+        public DbSet<DailyChallenge> DailyChallenges { get; set; }
 
         /// <summary>
         /// Configures entity relationships and constraints.
@@ -24,6 +25,10 @@ namespace ZTP_Project.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            
+            modelBuilder.Entity<Language>()
+                .HasIndex(l => l.Code)
+                .IsUnique();
 
             modelBuilder.Entity<Word>()
                 .HasOne(w => w.Language)

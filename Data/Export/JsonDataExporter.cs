@@ -9,7 +9,10 @@ namespace ZTP_Project.Data.Export
     /// <typeparam name="T">The type of the data to export.</typeparam>
     public class JsonDataExporter<T> : IDataExporter<T>
     {
+        /// <inheritdoc />
         public string ContentType => "application/json";
+
+        /// <inheritdoc />
         public string FileExtension => ".json";
 
         /// <inheritdoc />

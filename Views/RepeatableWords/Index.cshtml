@@ -1,0 +1,28 @@
+@model IEnumerable<ZTP_Project.Models.Word>
+
+<h2>Words to Repeat</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No words to repeat.</div>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Word</th>
+            <th>Translation</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var word in Model)
+        {
+            <tr>
+                <td>@word.Original</td>
+                <td>@word.Translation</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

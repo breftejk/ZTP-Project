@@ -1,8 +1,63 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+ViewData["Title"] = "Home Page";
+var challenge = ViewBag.ActiveChallenge as ZTP_Project.Models.DailyChallenge;
 }
+
+@if (TempData["Success"] != null)
+{
+<div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+<div class="alert alert-danger">@TempData["Error"]</div>
+}
+
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+    @if (challenge != null)
+    {
+        <div class="mt-4">
+            <h2>Your Daily Challenge</h2>
+            <p><strong>Status:</strong> @(challenge.IsCompleted ? "Completed" : "In Progress")</p>
+            <p><strong>Words:</strong> @challenge.Words.Count()</p>
+
+            @if (!challenge.IsCompleted)
+            {
+                <form asp-action="CompleteChallenge" method="post" class="d-inline">
+                    <input type="hidden" name="challengeId" value="@challenge.Id" />
+                    <button type="submit" class="btn btn-success">Mark as Completed</button>
+                </form>
+            }
+
+            <div class="mt-3">
+                <h3>Words in Challenge</h3>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Original</th>
+                        <th>Translation</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var word in challenge.Words)
+                    {
+                        <tr>
+                            <td>@word.Original</td>
+                            <td>@word.Translation</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <p class="text-muted">No active challenge available. Log in and select a language to start your daily challenge.</p>
+    }
 </div>
+
+
+<a asp-controller="RepeatableWords" asp-action="Index" class="btn btn-warning">Repeat Words</a>

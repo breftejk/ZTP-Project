@@ -16,6 +16,12 @@ namespace ZTP_Project.Controllers
         private readonly IWordRepository _wordRepository;
         private readonly ILanguageRepository _languageRepository;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GroupsController"/> class.
+        /// </summary>
+        /// <param name="groupRepository">Repository for group operations.</param>
+        /// <param name="wordRepository">Repository for word operations.</param>
+        /// <param name="languageRepository">Repository for language operations.</param>
         public GroupsController(
             IGroupRepository groupRepository,
             IWordRepository wordRepository,
@@ -34,10 +40,18 @@ namespace ZTP_Project.Controllers
         public async Task<IActionResult> Index()
         {
             var userId = GetUserId();
-            var languageId = HttpContext.Session.GetInt32("SelectedLanguage");
+            var languageId = GetSelectedLanguage();
+
+            if (!languageId.HasValue)
+            {
+                TempData["Error"] = "Please select a language first.";
+                return RedirectToAction("SelectLanguage", "LanguageSelection");
+            }
+
             var groups = await _groupRepository.GetGroupsWithLanguageAsync(userId, languageId.Value);
             var language = await _languageRepository.GetByIdAsync(languageId.Value);
             ViewBag.CurrentLanguage = language?.Name ?? "Unknown";
+
             return View(groups);
         }
 
@@ -50,12 +64,20 @@ namespace ZTP_Project.Controllers
         public async Task<IActionResult> CreateGroup()
         {
             var languageId = GetSelectedLanguage();
+
+            if (!languageId.HasValue)
+            {
+                TempData["Error"] = "Please select a language first.";
+                return RedirectToAction("SelectLanguage", "LanguageSelection");
+            }
+
             var language = await _languageRepository.GetByIdAsync(languageId.Value);
             if (language == null)
             {
                 TempData["Error"] = "Selected language does not exist.";
                 return RedirectToAction("SelectLanguage", "LanguageSelection");
             }
+
             return View();
         }
 
@@ -69,7 +91,8 @@ namespace ZTP_Project.Controllers
         public async Task<IActionResult> CreateGroup(string name)
         {
             var languageId = GetSelectedLanguage();
-            if (languageId == null)
+
+            if (!languageId.HasValue)
             {
                 TempData["Error"] = "Please select a language first.";
                 return RedirectToAction("SelectLanguage", "LanguageSelection");
@@ -134,6 +157,7 @@ namespace ZTP_Project.Controllers
         /// <param name="wordId">The ID of the word.</param>
         /// <returns>A redirect to the list of words in the group.</returns>
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddWordToGroup(int groupId, int wordId)
         {
             var group = await _groupRepository.GetGroupWithDetailsAsync(groupId);
@@ -169,6 +193,7 @@ namespace ZTP_Project.Controllers
         /// <param name="wordId">The ID of the word.</param>
         /// <returns>A redirect to the list of words in the group.</returns>
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> RemoveWordFromGroup(int groupId, int wordId)
         {
             var group = await _groupRepository.GetGroupWithDetailsAsync(groupId);

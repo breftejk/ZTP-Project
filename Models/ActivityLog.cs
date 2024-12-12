@@ -6,7 +6,7 @@ namespace ZTP_Project.Models
     public class ActivityLog
     {
         /// <summary>
-        /// Gets or sets the activity log ID.
+        /// Gets or sets the unique identifier of the activity log.
         /// </summary>
         public int Id { get; set; }
 
@@ -24,6 +24,11 @@ namespace ZTP_Project.Models
         /// Gets or sets a value indicating whether the user's answer was correct.
         /// </summary>
         public bool IsCorrect { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the word was corrected after an incorrect answer.
+        /// </summary>
+        public bool Corrected { get; set; }
 
         /// <summary>
         /// Gets or sets the timestamp of when the activity occurred.

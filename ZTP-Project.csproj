@@ -64,6 +64,7 @@
       <_ContentIncludedByDefault Remove="Views\Auth\Login.cshtml" />
       <_ContentIncludedByDefault Remove="Views\Auth\Logout.cshtml" />
       <_ContentIncludedByDefault Remove="Views\Auth\Register.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\DailyChallenge\Index.cshtml" />
     </ItemGroup>
 
     <ItemGroup>

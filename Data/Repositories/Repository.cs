@@ -1,4 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace ZTP_Project.Data.Repositories
@@ -12,13 +16,18 @@ namespace ZTP_Project.Data.Repositories
         private protected readonly ApplicationDbContext _context;
         private protected readonly DbSet<T> _dbSet;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Repository{T}"/> class.
+        /// </summary>
+        /// <param name="context">The application's database context.</param>
         public Repository(ApplicationDbContext context)
         {
             _context = context;
             _dbSet = _context.Set<T>();
         }
 
-        public async Task<T> GetByIdAsync(int id, params Expression<Func<T, object>>[] includes)
+        /// <inheritdoc />
+        public async Task<T?> GetByIdAsync(int id, params Expression<Func<T, object>>[] includes)
         {
             IQueryable<T> query = _dbSet;
 
@@ -30,11 +39,13 @@ namespace ZTP_Project.Data.Repositories
             return await query.FirstOrDefaultAsync(e => EF.Property<int>(e, "Id") == id);
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<T>> GetAllAsync()
         {
             return await _dbSet.ToListAsync();
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes)
         {
             IQueryable<T> query = _dbSet.Where(predicate);
@@ -47,21 +58,25 @@ namespace ZTP_Project.Data.Repositories
             return await query.ToListAsync();
         }
 
+        /// <inheritdoc />
         public async Task AddAsync(T entity)
         {
             await _dbSet.AddAsync(entity);
         }
 
+        /// <inheritdoc />
         public virtual async Task AddRangeAsync(IEnumerable<T> entities)
         {
             await _dbSet.AddRangeAsync(entities);
         }
 
+        /// <inheritdoc />
         public void Remove(T entity)
         {
             _dbSet.Remove(entity);
         }
 
+        /// <inheritdoc />
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();

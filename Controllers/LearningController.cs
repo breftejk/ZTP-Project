@@ -4,6 +4,7 @@ using ZTP_Project.Learning.Activities;
 using ZTP_Project.Models;
 using ZTP_Project.Learning.Strategies;
 using ZTP_Project.Data.Repositories;
+using ZTP_Project.Learning.RepeatableWords;
 
 namespace ZTP_Project.Controllers
 {
@@ -12,29 +13,37 @@ namespace ZTP_Project.Controllers
     /// </summary>
     public class LearningController : BaseController
     {
-        private readonly ILearningStrategyFactory _factory;
+        private readonly IActivityLogRepository _activityLogRepository;
+        private readonly ILearningStrategies _learningStrategies;
         private readonly IGroupRepository _groupRepository;
         private readonly IWordRepository _wordRepository;
+        private readonly RepeatableWordsService _repeatableWordsService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LearningController"/> class.
         /// </summary>
-        /// <param name="factory">Strategies factory for learning modes.</param>
-        /// <param name="groupRepository">Repository for groups.</param>
-        /// <param name="wordRepository">Repository for words.</param>
-        /// <param name="notifier">Activity notifier.</param>
-        /// <param name="logger">Activity logger observer.</param>
+        /// <param name="learningStrategies">Factory for learning strategies.</param>
+        /// <param name="groupRepository">Repository for group operations.</param>
+        /// <param name="wordRepository">Repository for word operations.</param>
+        /// <param name="repeatableWordsService">Service for managing repeatable words.</param>
+        /// <param name="notifier">Notifier for activity logging.</param>
+        /// <param name="logger">Observer for activity notifications.</param>
+        /// <param name="activityLogRepository">Repository for activity logs.</param>
         public LearningController(
-            ILearningStrategyFactory factory,
+            ILearningStrategies learningStrategies,
             IGroupRepository groupRepository,
             IWordRepository wordRepository,
+            RepeatableWordsService repeatableWordsService,
             ActivityNotifier notifier,
-            IActivityObserver logger
+            IActivityObserver logger,
+            IActivityLogRepository activityLogRepository
         )
         {
-            _factory = factory;
+            _activityLogRepository = activityLogRepository;
+            _learningStrategies = learningStrategies;
             _groupRepository = groupRepository;
             _wordRepository = wordRepository;
+            _repeatableWordsService = repeatableWordsService;
             notifier.Attach(logger);
         }
 
@@ -49,6 +58,7 @@ namespace ZTP_Project.Controllers
             var languageId = GetSelectedLanguage().Value;
             var groups = await _groupRepository.GetGroupsWithLanguageAsync(userId, languageId);
             ViewBag.IncludeAllOption = true;
+            ViewBag.IncludeRepeatOption = true;
             return View(groups);
         }
 
@@ -60,30 +70,39 @@ namespace ZTP_Project.Controllers
         /// <param name="mode">The learning mode.</param>
         /// <returns>The result view.</returns>
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> SubmitAnswer(int wordId, string userAnswer, string mode)
         {
             var userId = GetUserId();
-            var learningMode = (LearningMode)Enum.Parse(typeof(LearningMode), mode, true);
-            var strategy = _factory.GetStrategy(learningMode);
+            var learningMode = Enum.Parse<LearningMode>(mode, true);
+            var strategy = _learningStrategies.GetStrategy(learningMode);
             var result = await strategy.EvaluateAnswer(userId, wordId, userAnswer);
+
+            if (result.IsCorrect && HttpContext.Session.GetString("IsRepeatSession") == bool.TrueString)
+            {
+                // Mark the word as corrected in the activity log
+                await _activityLogRepository.MarkAsCorrectedAsync(userId, wordId);
+            }
+
             return View("Result", result);
         }
 
         /// <summary>
         /// Displays a question view. If starting a new session, initializes session variables.
         /// </summary>
-        /// <param name="groupId">The selected group ID or -1 for all words.</param>
+        /// <param name="groupId">The ID of the group.</param>
         /// <param name="isNewSession">Indicates whether this is a new session.</param>
+        /// <param name="isRepeatSession">Indicates whether this is a repeat session.</param>
         /// <returns>The question view.</returns>
-        public async Task<IActionResult> Question(int? groupId = null, bool isNewSession = false)
+        public async Task<IActionResult> Question(int? groupId = null, bool isNewSession = false, bool isRepeatSession = false)
         {
             var mode = HttpContext.Session.GetString("CurrentMode");
 
             if (isNewSession)
             {
-                if (groupId == null)
+                if (groupId == null && !isRepeatSession)
                 {
-                    TempData["Error"] = "You must choose a group or 'All' to start the learning.";
+                    TempData["Error"] = "You must choose a group, 'All', or 'Repeatable' to start learning.";
                     return RedirectToAction("SelectMode");
                 }
 
@@ -94,11 +113,14 @@ namespace ZTP_Project.Controllers
                     return RedirectToAction("SelectMode");
                 }
 
-                HttpContext.Session.SetInt32("CurrentGroupId", groupId.Value);
+                HttpContext.Session.SetInt32("CurrentGroupId", groupId ?? -1);
                 HttpContext.Session.SetString("CurrentMode", mode);
+                HttpContext.Session.SetString("IsRepeatSession", isRepeatSession.ToString());
             }
 
             var currentGroupId = HttpContext.Session.GetInt32("CurrentGroupId");
+            var isRepeat = HttpContext.Session.GetString("IsRepeatSession") == bool.TrueString;
+
             if (currentGroupId == null || string.IsNullOrEmpty(mode))
             {
                 TempData["Error"] = "No active session.";
@@ -108,26 +130,23 @@ namespace ZTP_Project.Controllers
             var languageId = GetSelectedLanguage().Value;
             IEnumerable<Word> words;
 
-            if (currentGroupId == -1)
+            if (isRepeat)
             {
-                words = await _wordRepository.GetAllAsync();
+                words = await _repeatableWordsService.GetWordsToRepeatAsync(GetUserId(), languageId);
                 if (!words.Any())
                 {
-                    TempData["Error"] = "No words found for the selected language.";
+                    TempData["Error"] = "No repeatable words available.";
                     return RedirectToAction("SelectMode");
                 }
-
+            }
+            else if (currentGroupId == -1)
+            {
+                words = await _wordRepository.GetAllAsync();
                 words = words.Where(w => w.LanguageId == languageId).ToArray();
             }
             else
             {
                 var group = await _groupRepository.GetGroupWithDetailsAsync(currentGroupId.Value);
-                if (group == null || !group.GroupWords.Any())
-                {
-                    TempData["Error"] = "No words found in the selected group.";
-                    return RedirectToAction("SelectMode");
-                }
-
                 words = group.GroupWords.Select(gw => gw.Word);
             }
 
@@ -135,18 +154,6 @@ namespace ZTP_Project.Controllers
             var selectedWord = words.ElementAt(random.Next(words.Count()));
 
             ViewBag.Mode = mode;
-
-            if (mode == "MultipleChoice")
-            {
-                var allWords = await _wordRepository.GetAllAsync();
-                var translations = allWords.Select(w => w.Translation).Distinct().ToList();
-                translations.Remove(selectedWord.Translation);
-                var wrongOptions = translations.OrderBy(x => Guid.NewGuid()).Take(3).ToList();
-                wrongOptions.Add(selectedWord.Translation);
-                var options = wrongOptions.OrderBy(x => Guid.NewGuid()).ToList();
-                ViewBag.Options = options;
-            }
-
             return View("Question", selectedWord);
         }
     }

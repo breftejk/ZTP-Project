@@ -19,10 +19,7 @@ namespace ZTP_Project.Learning.Activities
             _activityLogRepository = activityLogRepository;
         }
 
-        /// <summary>
-        /// Updates the observer with a new activity log entry.
-        /// </summary>
-        /// <param name="log">The activity log.</param>
+        /// <inheritdoc />
         public async Task UpdateAsync(ActivityLog log)
         {
             Console.WriteLine("The activity logger has received a new log.");

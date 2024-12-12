@@ -13,37 +13,31 @@ namespace ZTP_Project.Models
         /// <summary>
         /// Gets or sets the unique identifier of the word.
         /// </summary>
-        [CsvIgnore]
-        [XmlIgnore]
-        [JsonIgnore]
+        [CsvIgnore, XmlIgnore, JsonIgnore]
         public int Id { get; set; }
 
         /// <summary>
         /// Gets or sets the original text of the word.
         /// </summary>
-        [Required(ErrorMessage = "Original word is required.")]
-        [StringLength(100, ErrorMessage = "Original word must be at most 100 characters.")]
+        [Required, StringLength(100)]
         public string Original { get; set; }
 
         /// <summary>
         /// Gets or sets the translation of the word.
         /// </summary>
-        [Required(ErrorMessage = "Translation is required.")]
-        [StringLength(100, ErrorMessage = "Translation must be at most 100 characters.")]
+        [Required, StringLength(100)]
         public string Translation { get; set; }
 
         /// <summary>
-        /// Gets or sets the identifier of the associated language.
+        /// Gets or sets the language ID associated with the word.
         /// </summary>
-        [Required(ErrorMessage = "Language is required.")]
+        [Required]
         public int LanguageId { get; set; }
 
         /// <summary>
-        /// Gets or sets the associated language of the word.
+        /// Gets or sets the language associated with the word.
         /// </summary>
-        [JsonIgnore]
-        [XmlIgnore]
-        [CsvIgnore]
+        [CsvIgnore, XmlIgnore, JsonIgnore]
         public Language? Language { get; set; }
     }
 }

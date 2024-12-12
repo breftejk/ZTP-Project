@@ -1,6 +1,6 @@
-using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ZTP_Project.Models;
+using ZTP_Project.Attributes;
 using ZTP_Project.Data.Repositories;
 
 namespace ZTP_Project.Controllers
@@ -8,6 +8,8 @@ namespace ZTP_Project.Controllers
     /// <summary>
     /// Controller responsible for displaying user activity reports.
     /// </summary>
+    [Authorize]
+    [LanguageSelected]
     public class ReportsController : BaseController
     {
         private readonly IActivityLogRepository _activityLogRepository;
@@ -29,12 +31,16 @@ namespace ZTP_Project.Controllers
         public async Task<IActionResult> UserActivity(int days = 7)
         {
             var userId = GetUserId();
-            var logs = await _activityLogRepository.GetRecentLogsAsync(userId, days);
+            var languageId = GetSelectedLanguage().Value;
+
+            var logs = await _activityLogRepository.GetRecentLogsAsync(userId, languageId, days);
             var correctCount = logs.Count(l => l.IsCorrect);
             var wrongCount = logs.Count(l => !l.IsCorrect);
+            var correctedCount = logs.Count(l => !l.IsCorrect && !l.Corrected);
 
             ViewBag.CorrectCount = correctCount;
             ViewBag.WrongCount = wrongCount;
+            ViewBag.CorrectedCount = correctedCount;
             ViewBag.Days = days;
 
             return View("UserActivity");
