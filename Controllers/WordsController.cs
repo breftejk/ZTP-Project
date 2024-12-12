@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
-using ZTP_Project.Factories;
+using ZTP_Project.Data.Export;
+using ZTP_Project.Data.Import;
 using ZTP_Project.Models;
-using ZTP_Project.Repositories;
+using ZTP_Project.Data.Repositories;
 
 namespace ZTP_Project.Controllers
 {
@@ -14,19 +15,19 @@ namespace ZTP_Project.Controllers
     {
         private readonly IWordRepository _wordRepository;
         private readonly ILanguageRepository _languageRepository;
-        private readonly IExporterFactory _exporterFactory;
-        private readonly IImporterFactory _importerFactory;
+        private readonly IDataExporters _dataExporters;
+        private readonly IDataImporters _dataImporters;
 
         public WordsController(
             IWordRepository wordRepository,
             ILanguageRepository languageRepository,
-            IExporterFactory exporterFactory,
-            IImporterFactory importerFactory)
+            IDataExporters dataExporters,
+            IDataImporters dataImporters)
         {
             _wordRepository = wordRepository;
             _languageRepository = languageRepository;
-            _exporterFactory = exporterFactory;
-            _importerFactory = importerFactory;
+            _dataExporters = dataExporters;
+            _dataImporters = dataImporters;
         }
 
         /// <summary>
@@ -117,7 +118,7 @@ namespace ZTP_Project.Controllers
                     word.Language = languages.FirstOrDefault(l => l.Id == word.LanguageId);
                 }
 
-                var exporter = _exporterFactory.GetExporter<Word>(format);
+                var exporter = _dataExporters.GetExporter<Word>(format);
                 var fileContent = exporter.Export(words);
                 var fileName = $"Words_{DateTime.Now:yyyyMMddHHmmss}{exporter.FileExtension}";
 
@@ -174,7 +175,7 @@ namespace ZTP_Project.Controllers
                     fileData = memoryStream.ToArray();
                 }
 
-                var importer = _importerFactory.GetImporter<Word>(format);
+                var importer = _dataImporters.GetImporter<Word>(format);
                 var importedWords = importer.Import(fileData);
                 var languages = await _languageRepository.GetAllAsync();
 

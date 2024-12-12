@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ZTP_Project.Attributes;
 using ZTP_Project.Models;
-using ZTP_Project.Repositories;
+using ZTP_Project.Data.Repositories;
 
 namespace ZTP_Project.Controllers
 {

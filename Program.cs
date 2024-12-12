@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ZTP_Project.Data;
-using ZTP_Project.Factories;
-using ZTP_Project.Observers;
-using ZTP_Project.Repositories;
-using ZTP_Project.Strategies.Learning;
+using ZTP_Project.Data.Export;
+using ZTP_Project.Data.Import;
+using ZTP_Project.Data.Repositories;
+using ZTP_Project.Learning.Strategies;
+using ZTP_Project.Learning.Activities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,7 +53,7 @@ builder.Services.AddScoped<IWordRepository, WordRepository>();
 builder.Services.AddScoped<ILanguageRepository, LanguageRepository>();
 
 //
-// Learning Strategies and Factories
+// Learning Strategies and Export
 //
 builder.Services.AddScoped<FlashcardsStrategy>();
 builder.Services.AddScoped<MultipleChoiceStrategy>();
@@ -62,8 +63,8 @@ builder.Services.AddScoped<ILearningStrategyFactory, LearningStrategyFactory>();
 //
 // Exporters and Importers
 //
-builder.Services.AddSingleton<IExporterFactory, ExporterFactory>();
-builder.Services.AddSingleton<IImporterFactory, ImporterFactory>();
+builder.Services.AddSingleton<IDataExporters, DataExporters>();
+builder.Services.AddSingleton<IDataImporters, DataImporters>();
 
 //
 // Session Configuration

@@ -1,10 +1,9 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using ZTP_Project.Attributes;
-using ZTP_Project.Factories;
+using ZTP_Project.Learning.Activities;
 using ZTP_Project.Models;
-using ZTP_Project.Observers;
-using ZTP_Project.Repositories;
+using ZTP_Project.Learning.Strategies;
+using ZTP_Project.Data.Repositories;
 
 namespace ZTP_Project.Controllers
 {
@@ -20,7 +19,7 @@ namespace ZTP_Project.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="LearningController"/> class.
         /// </summary>
-        /// <param name="factory">Strategy factory for learning modes.</param>
+        /// <param name="factory">Strategies factory for learning modes.</param>
         /// <param name="groupRepository">Repository for groups.</param>
         /// <param name="wordRepository">Repository for words.</param>
         /// <param name="notifier">Activity notifier.</param>
