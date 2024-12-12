@@ -6,7 +6,6 @@
 <a asp-action="ExportData" class="btn btn-secondary">Export Data</a>
 <a asp-action="ImportData" class="btn btn-info">Import Data</a>
 
-
 <table class="table">
     <thead>
     <tr>
@@ -28,3 +27,49 @@
     }
     </tbody>
 </table>
+
+<nav>
+    <ul class="pagination justify-content-center">
+        <!-- Previous Arrow -->
+        @if (ViewBag.CurrentPage > 1)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage - 1)">← Previous</a>
+            </li>
+        }
+
+        <!-- First Page -->
+        @if (ViewBag.CurrentPage > 3)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-action="Index" asp-route-page="1">1</a>
+            </li>
+            <li class="page-item disabled"><span class="page-link">...</span></li>
+        }
+
+        <!-- Page Numbers Around Current Page -->
+        @for (int i = Math.Max(1, ViewBag.CurrentPage - 2); i <= Math.Min(ViewBag.TotalPages, ViewBag.CurrentPage + 2); i++)
+        {
+            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                <a class="page-link" asp-action="Index" asp-route-page="@i">@i</a>
+            </li>
+        }
+
+        <!-- Last Page -->
+        @if (ViewBag.CurrentPage < ViewBag.TotalPages - 2)
+        {
+            <li class="page-item disabled"><span class="page-link">...</span></li>
+            <li class="page-item">
+                <a class="page-link" asp-action="Index" asp-route-page="@ViewBag.TotalPages">@ViewBag.TotalPages</a>
+            </li>
+        }
+
+        <!-- Next Arrow -->
+        @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage + 1)">Next →</a>
+            </li>
+        }
+    </ul>
+</nav>

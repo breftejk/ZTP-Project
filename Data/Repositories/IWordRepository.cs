@@ -7,5 +7,6 @@ namespace ZTP_Project.Data.Repositories
     /// </summary>
     public interface IWordRepository : IRepository<Word>
     {
+        Task<(IEnumerable<Word> Words, int TotalCount)> GetPaginatedAsync(int page, int pageSize);
     }
 }

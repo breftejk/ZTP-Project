@@ -34,14 +34,21 @@ namespace ZTP_Project.Controllers
         /// Displays a list of all words.
         /// </summary>
         /// <returns>A view with the list of words.</returns>
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
         {
-            var words = await _wordRepository.FindAsync(w => true);
+            var (words, totalCount) = await _wordRepository.GetPaginatedAsync(page, pageSize);
             var languages = await _languageRepository.GetAllAsync();
+
             foreach (var word in words)
             {
                 word.Language = languages.FirstOrDefault(l => l.Id == word.LanguageId);
             }
+
+            var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+
             return View(words);
         }
 
