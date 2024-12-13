@@ -2,6 +2,7 @@
 bin/
 obj/
 out/
+out.zip
 
 # Rider-specific files
 .idea/
