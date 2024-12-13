@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using ZTP_Project.Data;
 using ZTP_Project.Data.Export;
 using ZTP_Project.Data.Import;
@@ -10,6 +11,11 @@ using ZTP_Project.Learning.Challenges;
 using ZTP_Project.Learning.RepeatableWords;
 
 var builder = WebApplication.CreateBuilder(args);
+
+//
+// Memory Cache
+//
+builder.Services.AddMemoryCache();
 
 //
 // Database Configuration
@@ -49,12 +55,23 @@ builder.Services.AddScoped<IActivityObserver, ActivityLogger>();
 //
 // Repositories
 //
+builder.Services.AddScoped<WordRepository>();
 builder.Services.AddScoped<IActivityLogRepository, ActivityLogRepository>();
 builder.Services.AddScoped<IDailyChallengeRepository, DailyChallengeRepository>();
 builder.Services.AddScoped<IGroupRepository, GroupRepository>();
-builder.Services.AddScoped<IWordRepository, WordRepository>();
 builder.Services.AddScoped<ILanguageRepository, LanguageRepository>();
 builder.Services.AddScoped<ActivityLogger>();
+
+//
+// Cache
+//
+builder.Services.AddScoped<IWordRepository>(provider =>
+{
+    var repo = provider.GetRequiredService<WordRepository>();
+    var cache = provider.GetRequiredService<IMemoryCache>();
+    var logger = provider.GetRequiredService<ILogger<CachedWordRepositoryProxy>>();
+    return new CachedWordRepositoryProxy(repo, cache, logger);
+});
 
 //
 // Services
