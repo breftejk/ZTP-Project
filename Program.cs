@@ -5,6 +5,7 @@ using ZTP_Project.Data;
 using ZTP_Project.Data.Export;
 using ZTP_Project.Data.Import;
 using ZTP_Project.Data.Repositories;
+using ZTP_Project.Learning;
 using ZTP_Project.Learning.Strategies;
 using ZTP_Project.Learning.Activities;
 using ZTP_Project.Learning.Challenges;
@@ -63,14 +64,19 @@ builder.Services.AddScoped<ILanguageRepository, LanguageRepository>();
 builder.Services.AddScoped<ActivityLogger>();
 
 //
+// Facade
+//
+builder.Services.AddScoped<ILearningFacade, LearningFacade>();
+
+//
 // Cache
 //
 builder.Services.AddScoped<IWordRepository>(provider =>
 {
     var repo = provider.GetRequiredService<WordRepository>();
     var cache = provider.GetRequiredService<IMemoryCache>();
-    var logger = provider.GetRequiredService<ILogger<CachedWordRepositoryProxy>>();
-    return new CachedWordRepositoryProxy(repo, cache, logger);
+    var logger = provider.GetRequiredService<ILogger<CachedWordRepository>>();
+    return new CachedWordRepository(repo, cache, logger);
 });
 
 //

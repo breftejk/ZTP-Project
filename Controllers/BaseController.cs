@@ -6,7 +6,7 @@ namespace ZTP_Project.Controllers
     /// Base controller providing common functionalities for other controllers,
     /// such as session management and user identification.
     /// </summary>
-    public class BaseController : Controller
+    public abstract class BaseController : Controller
     {
         // Key used for storing the selected language ID in the session.
         private const string SelectedLanguageSessionKey = "SelectedLanguage";

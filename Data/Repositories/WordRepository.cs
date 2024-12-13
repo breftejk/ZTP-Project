@@ -30,5 +30,17 @@ namespace ZTP_Project.Data.Repositories
 
             return (words, totalCount);
         }
+        
+        /// <inheritdoc />
+        public async Task<List<Word>> GetRandomWordsAsync(int excludedWordId, int count)
+        {
+            var words = (await GetAllAsync())
+                .Where(w => w.Id != excludedWordId).ToArray();
+
+            return words
+                .OrderBy(_ => Guid.NewGuid())
+                .Take(count)
+                .ToList();
+        }
     }
 }

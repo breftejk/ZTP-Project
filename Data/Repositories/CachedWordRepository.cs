@@ -7,11 +7,11 @@ namespace ZTP_Project.Data.Repositories
     /// <summary>
     /// Proxy for IWordRepository that adds caching functionality.
     /// </summary>
-    public class CachedWordRepositoryProxy : IWordRepository
+    public class CachedWordRepository : IWordRepository
     {
         private readonly IWordRepository _innerRepository;
         private readonly IMemoryCache _cache;
-        private readonly ILogger<CachedWordRepositoryProxy> _logger;
+        private readonly ILogger<CachedWordRepository> _logger;
         private readonly MemoryCacheEntryOptions _cacheOptions;
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace ZTP_Project.Data.Repositories
         /// <param name="innerRepository">The actual word repository.</param>
         /// <param name="cache">The memory cache instance.</param>
         /// <param name="logger">The logger instance.</param>
-        public CachedWordRepositoryProxy(IWordRepository innerRepository, IMemoryCache cache, ILogger<CachedWordRepositoryProxy> logger)
+        public CachedWordRepository(IWordRepository innerRepository, IMemoryCache cache, ILogger<CachedWordRepository> logger)
         {
             _innerRepository = innerRepository;
             _cache = cache;
@@ -112,6 +112,12 @@ namespace ZTP_Project.Data.Repositories
         public async Task<(IEnumerable<Word> Words, int TotalCount)> GetPaginatedAsync(int page, int pageSize)
         {
             return await _innerRepository.GetPaginatedAsync(page, pageSize);
+        }
+        
+        /// <inheritdoc />
+        public async Task<List<Word>> GetRandomWordsAsync(int excludedWordId, int count)
+        {
+            return await _innerRepository.GetRandomWordsAsync(excludedWordId, count);
         }
     }
 }

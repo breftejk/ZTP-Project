@@ -1,10 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using ZTP_Project.Attributes;
+using ZTP_Project.Learning;
 using ZTP_Project.Learning.Activities;
 using ZTP_Project.Models;
-using ZTP_Project.Learning.Strategies;
-using ZTP_Project.Data.Repositories;
-using ZTP_Project.Learning.RepeatableWords;
 
 namespace ZTP_Project.Controllers
 {
@@ -13,37 +11,15 @@ namespace ZTP_Project.Controllers
     /// </summary>
     public class LearningController : BaseController
     {
-        private readonly IActivityLogRepository _activityLogRepository;
-        private readonly ILearningStrategies _learningStrategies;
-        private readonly IGroupRepository _groupRepository;
-        private readonly IWordRepository _wordRepository;
-        private readonly RepeatableWordsService _repeatableWordsService;
+        private readonly ILearningFacade _learningFacade;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LearningController"/> class.
         /// </summary>
-        /// <param name="learningStrategies">Factory for learning strategies.</param>
-        /// <param name="groupRepository">Repository for group operations.</param>
-        /// <param name="wordRepository">Repository for word operations.</param>
-        /// <param name="repeatableWordsService">Service for managing repeatable words.</param>
-        /// <param name="notifier">Notifier for activity logging.</param>
-        /// <param name="logger">Observer for activity notifications.</param>
-        /// <param name="activityLogRepository">Repository for activity logs.</param>
-        public LearningController(
-            ILearningStrategies learningStrategies,
-            IGroupRepository groupRepository,
-            IWordRepository wordRepository,
-            RepeatableWordsService repeatableWordsService,
-            ActivityNotifier notifier,
-            IActivityObserver logger,
-            IActivityLogRepository activityLogRepository
-        )
+        /// <param name="learningFacade">Facade for learning operations.</param>
+        public LearningController(ILearningFacade learningFacade, ActivityNotifier notifier, IActivityObserver logger)
         {
-            _activityLogRepository = activityLogRepository;
-            _learningStrategies = learningStrategies;
-            _groupRepository = groupRepository;
-            _wordRepository = wordRepository;
-            _repeatableWordsService = repeatableWordsService;
+            _learningFacade = learningFacade;
             notifier.Attach(logger);
         }
 
@@ -56,7 +32,7 @@ namespace ZTP_Project.Controllers
         {
             var userId = GetUserId();
             var languageId = GetSelectedLanguage().Value;
-            var groups = await _groupRepository.GetGroupsWithLanguageAsync(userId, languageId);
+            var groups = await _learningFacade.GetGroupsWithLanguageAsync(userId, languageId);
             ViewBag.IncludeAllOption = true;
             ViewBag.IncludeRepeatOption = true;
             return View(groups);
@@ -75,13 +51,12 @@ namespace ZTP_Project.Controllers
         {
             var userId = GetUserId();
             var learningMode = Enum.Parse<LearningMode>(mode, true);
-            var strategy = _learningStrategies.GetStrategy(learningMode);
-            var result = await strategy.EvaluateAnswer(userId, wordId, userAnswer);
+            var result = await _learningFacade.EvaluateAnswerAsync(userId, wordId, userAnswer, learningMode);
 
             if (result.IsCorrect && HttpContext.Session.GetString("IsRepeatSession") == bool.TrueString)
             {
                 // Mark the word as corrected in the activity log
-                await _activityLogRepository.MarkAsCorrectedAsync(userId, wordId);
+                await _learningFacade.EvaluateAnswerAsync(userId, wordId, userAnswer, learningMode);
             }
 
             return View("Result", result);
@@ -97,7 +72,7 @@ namespace ZTP_Project.Controllers
         public async Task<IActionResult> Question(int? groupId = null, bool isNewSession = false, bool isRepeatSession = false)
         {
             var mode = HttpContext.Session.GetString("CurrentMode");
-
+            
             if (isNewSession)
             {
                 if (groupId == null && !isRepeatSession)
@@ -109,7 +84,7 @@ namespace ZTP_Project.Controllers
                 mode = HttpContext.Request.Query["mode"];
                 if (string.IsNullOrEmpty(mode))
                 {
-                    TempData["Error"] = "You must choose a learning mode.";
+                   TempData["Error"] = "You must choose a learning mode.";
                     return RedirectToAction("SelectMode");
                 }
 
@@ -132,7 +107,7 @@ namespace ZTP_Project.Controllers
 
             if (isRepeat)
             {
-                words = await _repeatableWordsService.GetWordsToRepeatAsync(GetUserId(), languageId);
+                words = await _learningFacade.GetWordsToRepeatAsync(GetUserId(), languageId);
                 if (!words.Any())
                 {
                     TempData["Error"] = "No repeatable words available.";
@@ -141,17 +116,22 @@ namespace ZTP_Project.Controllers
             }
             else if (currentGroupId == -1)
             {
-                words = await _wordRepository.GetAllAsync();
-                words = words.Where(w => w.LanguageId == languageId).ToArray();
+                words = await _learningFacade.GetAllWordsAsync(languageId);
             }
             else
             {
-                var group = await _groupRepository.GetGroupWithDetailsAsync(currentGroupId.Value);
-                words = group.GroupWords.Select(gw => gw.Word);
+                words = await _learningFacade.GetGroupWordsAsync(currentGroupId.Value);
             }
+            
 
             var random = new Random();
             var selectedWord = words.ElementAt(random.Next(words.Count()));
+            
+            if (mode == "MultipleChoice")
+            {
+                var options = await _learningFacade.GetMultipleChoiceOptionsAsync(selectedWord.Id);
+                ViewBag.Options = options;
+            }
 
             ViewBag.Mode = mode;
             return View("Question", selectedWord);
