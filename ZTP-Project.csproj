@@ -65,6 +65,35 @@
       <_ContentIncludedByDefault Remove="Views\Auth\Logout.cshtml" />
       <_ContentIncludedByDefault Remove="Views\Auth\Register.cshtml" />
       <_ContentIncludedByDefault Remove="Views\DailyChallenge\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="3_aplikacja_do_nauki_jezyka_Kondrat_Ochrymiuk_Roszkowski\appsettings.Development.json" />
+      <_ContentIncludedByDefault Remove="3_aplikacja_do_nauki_jezyka_Kondrat_Ochrymiuk_Roszkowski\appsettings.json" />
+      <_ContentIncludedByDefault Remove="3_aplikacja_do_nauki_jezyka_Kondrat_Ochrymiuk_Roszkowski\Properties\launchSettings.json" />
+      <_ContentIncludedByDefault Remove="3_aplikacja_do_nauki_jezyka_Kondrat_Ochrymiuk_Roszkowski\wwwroot\french.json" />
+      <_ContentIncludedByDefault Remove="3_aplikacja_do_nauki_jezyka_Kondrat_Ochrymiuk_Roszkowski\wwwroot\german.json" />
+      <_ContentIncludedByDefault Remove="3_aplikacja_do_nauki_jezyka_Kondrat_Ochrymiuk_Roszkowski\wwwroot\italian.json" />
+      <_ContentIncludedByDefault Remove="3_aplikacja_do_nauki_jezyka_Kondrat_Ochrymiuk_Roszkowski\wwwroot\spanish.json" />
+      <_ContentIncludedByDefault Remove="3_aplikacja_do_nauki_jezyka_Kondrat_Ochrymiuk_Roszkowski\Views\Groups\AddWords.cshtml" />
+      <_ContentIncludedByDefault Remove="3_aplikacja_do_nauki_jezyka_Kondrat_Ochrymiuk_Roszkowski\Views\Groups\CreateGroup.cshtml" />
+      <_ContentIncludedByDefault Remove="3_aplikacja_do_nauki_jezyka_Kondrat_Ochrymiuk_Roszkowski\Views\Groups\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="3_aplikacja_do_nauki_jezyka_Kondrat_Ochrymiuk_Roszkowski\Views\Home\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="3_aplikacja_do_nauki_jezyka_Kondrat_Ochrymiuk_Roszkowski\Views\Languages\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="3_aplikacja_do_nauki_jezyka_Kondrat_Ochrymiuk_Roszkowski\Views\Languages\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="3_aplikacja_do_nauki_jezyka_Kondrat_Ochrymiuk_Roszkowski\Views\LanguageSelection\SelectLanguage.cshtml" />
+      <_ContentIncludedByDefault Remove="3_aplikacja_do_nauki_jezyka_Kondrat_Ochrymiuk_Roszkowski\Views\Learning\Question.cshtml" />
+      <_ContentIncludedByDefault Remove="3_aplikacja_do_nauki_jezyka_Kondrat_Ochrymiuk_Roszkowski\Views\Learning\Result.cshtml" />
+      <_ContentIncludedByDefault Remove="3_aplikacja_do_nauki_jezyka_Kondrat_Ochrymiuk_Roszkowski\Views\Learning\SelectMode.cshtml" />
+      <_ContentIncludedByDefault Remove="3_aplikacja_do_nauki_jezyka_Kondrat_Ochrymiuk_Roszkowski\Views\RepeatableWords\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="3_aplikacja_do_nauki_jezyka_Kondrat_Ochrymiuk_Roszkowski\Views\Reports\UserActivity.cshtml" />
+      <_ContentIncludedByDefault Remove="3_aplikacja_do_nauki_jezyka_Kondrat_Ochrymiuk_Roszkowski\Views\Shared\Error.cshtml" />
+      <_ContentIncludedByDefault Remove="3_aplikacja_do_nauki_jezyka_Kondrat_Ochrymiuk_Roszkowski\Views\Shared\_Layout.cshtml" />
+      <_ContentIncludedByDefault Remove="3_aplikacja_do_nauki_jezyka_Kondrat_Ochrymiuk_Roszkowski\Views\Shared\_LoginPartial.cshtml" />
+      <_ContentIncludedByDefault Remove="3_aplikacja_do_nauki_jezyka_Kondrat_Ochrymiuk_Roszkowski\Views\Shared\_ValidationScriptsPartial.cshtml" />
+      <_ContentIncludedByDefault Remove="3_aplikacja_do_nauki_jezyka_Kondrat_Ochrymiuk_Roszkowski\Views\Words\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="3_aplikacja_do_nauki_jezyka_Kondrat_Ochrymiuk_Roszkowski\Views\Words\ExportData.cshtml" />
+      <_ContentIncludedByDefault Remove="3_aplikacja_do_nauki_jezyka_Kondrat_Ochrymiuk_Roszkowski\Views\Words\ImportData.cshtml" />
+      <_ContentIncludedByDefault Remove="3_aplikacja_do_nauki_jezyka_Kondrat_Ochrymiuk_Roszkowski\Views\Words\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="3_aplikacja_do_nauki_jezyka_Kondrat_Ochrymiuk_Roszkowski\Views\_ViewImports.cshtml" />
+      <_ContentIncludedByDefault Remove="3_aplikacja_do_nauki_jezyka_Kondrat_Ochrymiuk_Roszkowski\Views\_ViewStart.cshtml" />
     </ItemGroup>
 
     <ItemGroup>
